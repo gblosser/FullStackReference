@@ -9,11 +9,13 @@ namespace TSD.Reference.Core.Services
 	{
 		private readonly IRentalAgreementRepository _rentalAgreementRepository;
 		private readonly ICustomerRepository _customerRepository;
+		private readonly IUserRepository _userRepository;
 
-		public RentalAgreementService(IRentalAgreementRepository theRentalAgreementRepository, ICustomerRepository theCustomerRepository)
+		public RentalAgreementService(IRentalAgreementRepository theRentalAgreementRepository, ICustomerRepository theCustomerRepository, IUserRepository theUserRepository)
 		{
 			_rentalAgreementRepository = theRentalAgreementRepository;
 			_customerRepository = theCustomerRepository;
+			_userRepository = theUserRepository;
 		}
 
 		/// <summary>
@@ -43,7 +45,14 @@ namespace TSD.Reference.Core.Services
 
 		public RentalAgreement UpdateRentalAgreement(RentalAgreement theRentalAgreement)
 		{
+			var aUser = _userRepository.GetUser(theRentalAgreement.EmployeeId);
+
+			if(!aUser.IsEmployee)
+				throw new InvalidPermissionsException(
+					$"The user {aUser.LastName}, {aUser.FirstName} is not an employee and cannot modify a rental agreement");
+
 			_rentalAgreementRepository.UpdateRentalAgreement(theRentalAgreement);
+
 			return GetRentalAgreement(theRentalAgreement.Id);
 		}
 	}

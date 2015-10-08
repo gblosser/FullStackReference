@@ -30,6 +30,7 @@ namespace TSD.Reference.Data.SQLite.DTO
 		/// Status indicates if the agreement is a quote, reservation, open agreement, closed agreement or cancelled agreement
 		/// </summary>
 		public string Status { get; set; }
+		public int EmployeeId { get; set; }
 	}
 
 	internal static class RentalAgreementExtensions
@@ -50,7 +51,8 @@ namespace TSD.Reference.Data.SQLite.DTO
 				LocationId = d.Location,
 				OutDate = d.OutDate,
 				RenterId = d.Renter,
-				Status = d.Status
+				Status = d.Status,
+				EmployeeId = d.EmployeeId
 			};
 		}
 
@@ -72,7 +74,8 @@ namespace TSD.Reference.Data.SQLite.DTO
 				Location = d.LocationId,
 				OutDate = d.OutDate,
 				Renter = d.RenterId,
-				Status = d.Status
+				Status = d.Status,
+				EmployeeId = d.EmployeeId
 			};
 		}
 	}

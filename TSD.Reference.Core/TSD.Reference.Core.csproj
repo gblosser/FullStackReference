@@ -60,6 +60,7 @@
     <Compile Include="src\Entities\RentalAgreement.cs" />
     <Compile Include="src\Entities\Renter.cs" />
     <Compile Include="src\Entities\User.cs" />
+    <Compile Include="src\Exceptions\InvalidPermissionsException.cs" />
     <Compile Include="src\Exceptions\InvalidRentalAgreementException.cs" />
     <Compile Include="src\Services\AutomobileService.cs" />
     <Compile Include="src\Services\CustomerService.cs" />

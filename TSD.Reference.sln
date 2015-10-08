@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSD.Reference.Data.SQLite",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSD.Reference.Data.PostgreSQL", "TSD.Reference.Data.PostgreSQL\TSD.Reference.Data.PostgreSQL.csproj", "{977E7D07-9303-4180-8480-B06242B47D47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSD.Reference.API", "TSD.Reference.API\TSD.Reference.API.csproj", "{4E96C165-E2B7-40B2-80B9-BBF829356BA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{977E7D07-9303-4180-8480-B06242B47D47}.Release|Any CPU.Build.0 = Release|Any CPU
 		{977E7D07-9303-4180-8480-B06242B47D47}.Release|x86.ActiveCfg = Release|Any CPU
 		{977E7D07-9303-4180-8480-B06242B47D47}.Release|x86.Build.0 = Release|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E96C165-E2B7-40B2-80B9-BBF829356BA9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

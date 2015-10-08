@@ -21,7 +21,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status from rentalagreement where id = :value1", Connection);
+						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -67,7 +67,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9) RETURNING id", Connection);
+					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
@@ -79,6 +79,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8",
 					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(aCommand.ExecuteScalar());
@@ -113,7 +114,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9 where id=:value10;", Connection);
+					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
@@ -125,7 +126,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8",
 					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.Id);
+				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
 
 				aCommand.ExecuteNonQuery();
 			}
@@ -166,7 +168,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status from rentalagreement where id = :value1", Connection);
+						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -212,7 +214,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9) RETURNING id", Connection);
+					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
@@ -224,6 +226,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8",
 					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
@@ -258,7 +261,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9 where id=:value10;", Connection);
+					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
@@ -270,7 +273,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8",
 					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.Id);
+				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
 
 				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 			}
@@ -325,7 +329,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Automobile = Convert.ToInt32(aReader["automobileid"]),
 				InDate = Convert.ToDateTime(aReader["indate"]),
 				OutDate = Convert.ToDateTime(aReader["outdate"]),
-				Status = Convert.ToString(aReader["status"])
+				Status = Convert.ToString(aReader["status"]) ,
+				EmployeeId = Convert.ToInt32(aReader["employeeid"])
 			};
 
 			return aReturn;
