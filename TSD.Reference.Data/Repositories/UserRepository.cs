@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
+using TSD.Reference.Data.SQLite.DTO;
 
 namespace TSD.Reference.Data.SQLite.Repositories
 {
@@ -12,56 +10,61 @@ namespace TSD.Reference.Data.SQLite.Repositories
 	{
 		public UserRepository()
 		{
-			
+			var db = Connection;
+			db.CreateTable<UserDTO>();
 		}
 		public User GetUser(int theUserId)
 		{
-			throw new NotImplementedException();
+			var aUser = Connection.Table<UserDTO>().FirstOrDefault(aItem => aItem.Id == theUserId);
+			return aUser?.ToEntity();
 		}
 
 		public User GetUserByEmail(string theEmail)
 		{
-			throw new NotImplementedException();
+			var aUser = Connection.Table<UserDTO>().FirstOrDefault(aItem => aItem.Email == theEmail);
+			return aUser?.ToEntity();
 		}
 
 		public int AddUser(User theUser)
 		{
-			throw new NotImplementedException();
+			return Connection.Insert(theUser.ToDTO());
 		}
 
 		public void UpdateUser(User theUser)
 		{
-			throw new NotImplementedException();
+			Connection.Update(theUser.ToDTO());
 		}
 
 		public void DeleteUser(User theUser)
 		{
-			throw new NotImplementedException();
+			Connection.Delete<RenterDTO>(theUser.Id);
 		}
 
-		public Task<User> GetUserAsync(int theUserId)
+		public async Task<User> GetUserAsync(int theUserId)
 		{
-			throw new NotImplementedException();
+			var aUser = await ConnectionAsync.Table<UserDTO>().Where(aItem => aItem.Id == theUserId).FirstOrDefaultAsync();
+			return aUser?.ToEntity();
 		}
 
-		public Task<User> GetUserByEmailAsync(string theEmail)
+		public async Task<User> GetUserByEmailAsync(string theEmail)
 		{
-			throw new NotImplementedException();
+			var aUser = await ConnectionAsync.Table<UserDTO>().Where(aItem => aItem.Email == theEmail).FirstOrDefaultAsync();
+			return aUser?.ToEntity();
 		}
 
-		public Task<int> AddUserAsync(User theUser)
+		public async Task<int> AddUserAsync(User theUser)
 		{
-			throw new NotImplementedException();
+			return await ConnectionAsync.InsertAsync(theUser.ToDTO());
 		}
 
-		public Task UpdateUserAsync(User theUser)
+		public async Task UpdateUserAsync(User theUser)
 		{
-			throw new NotImplementedException();
+			await ConnectionAsync.UpdateAsync(theUser.ToDTO());
 		}
 
-		public Task DeleteUserAsync(User theUser)
+		public async Task DeleteUserAsync(User theUser)
 		{
-			throw new NotImplementedException();
+			await ConnectionAsync.DeleteAsync(theUser.ToDTO());
 		}
 	}
 }
