@@ -13,38 +13,38 @@ using TSD.Reference.API.Models;
 
 namespace TSD.Reference.API
 {
-    public partial class Startup
-    {
-        public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
+	public partial class Startup
+	{
+		public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
-        public static string PublicClientId { get; private set; }
+		public static string PublicClientId { get; private set; }
 
-        // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
-        public void ConfigureAuth(IAppBuilder app)
-        {
-            // Configure the db context and user manager to use a single instance per request
-            app.CreatePerOwinContext(ApplicationDbContext.Create);
-            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+		// For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+		public void ConfigureAuth(IAppBuilder app)
+		{
+			// Configure the db context and user manager to use a single instance per request
+			app.CreatePerOwinContext(ApplicationDbContext.Create);
+			app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
 
-            // Enable the application to use a cookie to store information for the signed in user
-            // and to use a cookie to temporarily store information about a user logging in with a third party login provider
-            app.UseCookieAuthentication(new CookieAuthenticationOptions());
-            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+			// Enable the application to use a cookie to store information for the signed in user
+			// and to use a cookie to temporarily store information about a user logging in with a third party login provider
+			app.UseCookieAuthentication(new CookieAuthenticationOptions());
+			app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
-            // Configure the application for OAuth based flow
-            PublicClientId = "self";
-            OAuthOptions = new OAuthAuthorizationServerOptions
-            {
-                TokenEndpointPath = new PathString("/Token"),
-                Provider = new ApplicationOAuthProvider(PublicClientId),
-                AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
-                // In production mode set AllowInsecureHttp = false
-                AllowInsecureHttp = true
-            };
+			// Configure the application for OAuth based flow
+			PublicClientId = "self";
+			OAuthOptions = new OAuthAuthorizationServerOptions
+			{
+				TokenEndpointPath = new PathString("/Token"),
+				Provider = new ApplicationOAuthProvider(PublicClientId),
+				AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
+				AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+				// In production mode set AllowInsecureHttp = false
+				AllowInsecureHttp = true
+			};
 
-            // Enable the application to use bearer tokens to authenticate users
-            app.UseOAuthBearerTokens(OAuthOptions);
+			// Enable the application to use bearer tokens to authenticate users
+			app.UseOAuthBearerTokens(OAuthOptions);
 
 			// Uncomment the following lines to enable logging in with third party login providers
 			//app.UseMicrosoftAccountAuthentication(
@@ -61,9 +61,11 @@ namespace TSD.Reference.API
 
 			app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
 			{
-				ClientId = "",
-				ClientSecret = ""
+				ClientId = GoogleClientId,              // the clientid and clientsecret are properties in StartupPrivate.Auth.cs
+				ClientSecret = GoogleClientSecret       // which will not be checked into github since it's a public repo.  
+														// StartupPrivate.Auth.cs declares these properties as part of this Startup 
+														// partial class -->  public partial class Startup{...}
 			});
 		}
-    }
+	}
 }
