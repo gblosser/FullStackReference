@@ -86,6 +86,7 @@
     <Compile Include="src\Services\UserService.cs" />
     <Compile Include="src\Services\Validation\RentalAgreementValidation.cs" />
     <Compile Include="test\Services\AutomobileServiceTest.cs" />
+    <Compile Include="test\Services\CustomerServiceTest.cs" />
     <Compile Include="test\Services\RentalAgreementServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
