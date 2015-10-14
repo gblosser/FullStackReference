@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
+using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.Core.Services
 {
-	public class DriverService
+	public class DriverService : IDriverService
 	{
 		private readonly IDriverRepository _repository;
 
@@ -13,14 +15,42 @@ namespace TSD.Reference.Core.Services
 			_repository = theRepository;
 		}
 
-		public List<Driver> GetDriverByLastName(string theLastName)
+		public IEnumerable<Driver> GetDriverByLastName(string theLastName)
 		{
 			return _repository.GetDriverByLastName(theLastName);
 		}
 
-		public Driver GetDriver(int theDriverId)
+		public async Task<IEnumerable<Driver>> GetDriversByCustomerAsync(int theCustomerId)
 		{
+			return await _repository.GetDriversByCustomerAsync(theCustomerId);
+		}
+
+		public Driver GetDriver(int theCustomerId, int theDriverId)
+		{
+
 			return _repository.GetDriver(theDriverId);
+		}
+
+		public async Task<Driver> GetDriverAsync(int theCustomerId, int id)
+		{
+			var aDriver = await _repository.GetDriverAsync(id);
+
+			return aDriver.CustomerId == theCustomerId ? aDriver : null;
+		}
+
+		public async Task<int> AddDriverAsync(Driver driver)
+		{
+			return await _repository.AddDriverAsync(driver);
+		}
+
+		public async Task UpdateDriverAsync(Driver driver)
+		{
+			await _repository.UpdateDriverAsync(driver);
+		}
+
+		public async Task DeleteDriverAsync(Driver driver)
+		{
+			await _repository.DeleteDriverAsync(driver);
 		}
 
 		public int AddDriver(Driver theDriver)

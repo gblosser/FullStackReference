@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -300,6 +301,53 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			// no catch here, this is a reference project
 			// TODO: add catch and actions here
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<RentalAgreement>> GetRentalAgreementsForCustomerAsync(int theCustomerId)
+		{
+			try
+			{
+				await Connection.OpenAsync().ConfigureAwait(false);
+
+				var aPreparedCommand =
+					new NpgsqlCommand(
+						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where customerid = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+				aPreparedCommand.Parameters.Add(aParam);
+
+				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+				if (!aReader.HasRows)
+					return null;
+
+				var aReturn = new List<RentalAgreement>();
+				while (await aReader.ReadAsync().ConfigureAwait(false))
+				{
+					aReturn.Add(ReadRentalAgreement(aReader));
+				}
+				return aReturn;
+			}
+			catch (NpgsqlException)
+			{
+				return null;
+			}
+			catch (InvalidOperationException)
+			{
+				return null;
+			}
+			catch (SqlException)
+			{
+				return null;
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return null;
+			}
 			finally
 			{
 				if (Connection.State == ConnectionState.Open)

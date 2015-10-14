@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
@@ -50,6 +52,12 @@ namespace TSD.Reference.Data.SQLite.Repositories
 		{
 			var aUser = await ConnectionAsync.Table<UserDTO>().Where(aItem => aItem.Email == theEmail).FirstOrDefaultAsync();
 			return aUser?.ToEntity();
+		}
+
+		public async Task<IEnumerable<User>> GetUsersForCustomerAsync(int theCustomerId)
+		{
+			var aUser = await ConnectionAsync.Table<UserDTO>().Where(aItem => aItem.CustomerId == theCustomerId).ToListAsync();
+			return aUser?.Select(aItem => aItem.ToEntity());
 		}
 
 		public async Task<int> AddUserAsync(User theUser)

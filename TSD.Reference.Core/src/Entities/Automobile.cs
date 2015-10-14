@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TSD.Reference.Core.Entities
 {
@@ -12,6 +13,7 @@ namespace TSD.Reference.Core.Entities
 		/// <summary>
 		/// Vehicle Identification Number
 		/// </summary>
+		[Required]
 		public string VIN { get; set; }
 
 		/// <summary>
@@ -23,10 +25,13 @@ namespace TSD.Reference.Core.Entities
 
 		public string Style { get; set; }
 		public string Color { get; set; }
+		[Required]
 		public string Manufacturer { get; set; }
+		[Required]
 		public string Model { get; set; }
 		public string Code { get; set; }
 
+		[Required]
 		public int LocationId { get; set; }
 	}
 }

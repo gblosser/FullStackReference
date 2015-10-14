@@ -18,6 +18,8 @@ namespace TSD.Reference.Core.test.Services
 			 var aMockRepo = new Mock<IAutomobileRepository>();
 			aMockRepo.Setup(aItem => aItem.AddAutomobile(It.IsAny<Automobile>())).Returns(1);
 
+			var aMockLocationRepo = new Mock<ILocationRepository>();
+
 			aMockRepo.Setup(aItem => aItem.GetAutomobiles(It.IsAny<List<int>>())).Returns(
 				new List<Automobile>
 				{
@@ -56,9 +58,9 @@ namespace TSD.Reference.Core.test.Services
 						VehicleNumber = "RENT-1",
 						VIN = "XYZ123ABC789async"
 					}
-				}));
+				}.AsEnumerable()));
 
-			_svc = new AutomobileService(aMockRepo.Object);
+			_svc = new AutomobileService(aMockRepo.Object, aMockLocationRepo.Object);
 		}
 
 
@@ -75,7 +77,7 @@ namespace TSD.Reference.Core.test.Services
 		{
 			var aCar = _svc.GetAutomobiles(new List<int> {1});
 
-			Assert.Equal(1, aCar.Count);
+			Assert.Equal(1, aCar.Count());
 			Assert.Equal(aCar.First().VIN, "XYZ123ABC789chevy");
 		}
 
@@ -105,7 +107,7 @@ namespace TSD.Reference.Core.test.Services
 		{
 			var aCar = await _svc.GetAutomobilesAsync(new List<int> { 1 });
 
-			Assert.Equal(1, aCar.Count);
+			Assert.Equal(1, aCar.Count());
 			Assert.Equal(aCar.First().VIN, "XYZ123ABC789async");
 		}
 	}

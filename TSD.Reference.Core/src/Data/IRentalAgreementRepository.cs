@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TSD.Reference.Core.Entities;
 
@@ -15,5 +16,6 @@ namespace TSD.Reference.Core.Data
 		Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement);
 		Task UpdateRentalAgreementAsync(RentalAgreement theRentalAgreement);
 		Task DeleteRentalAgreementAsync(RentalAgreement theRentalAgreement);
+		Task<IEnumerable<RentalAgreement>> GetRentalAgreementsForCustomerAsync(int theCustomerId);
 	}
 }

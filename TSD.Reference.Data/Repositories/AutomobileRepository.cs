@@ -25,7 +25,7 @@ namespace TSD.Reference.Data.SQLite.Repositories
 			return aDto?.ToEntity();
 		}
 
-		public List<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds)
+		public IEnumerable<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds)
 		{
 			var aResult = Connection.Table<AutomobileDTO>().Where(aItem => theAutomobileIds.Contains(aItem.Id));
 
@@ -34,6 +34,24 @@ namespace TSD.Reference.Data.SQLite.Repositories
 				return Enumerable.Empty<Automobile>().ToList();
 
 			return aResult.Select(aItem => aItem.ToEntity()).ToList();
+		}
+
+		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theLocationId)
+		{
+			var aQueryResult = ConnectionAsync.Table<AutomobileDTO>().Where(aItem => aItem.LocationId == theLocationId);
+
+			if (aQueryResult == null)
+				return null;
+
+			var aDtoList = await aQueryResult.ToListAsync();
+			return aDtoList?.Select(aItem => aItem.ToEntity()).ToList();
+		}
+
+		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationsAsync(IEnumerable<int> theLocationIds)
+		{
+			var aQueryResult = await ConnectionAsync.Table<AutomobileDTO>().Where(aItem => theLocationIds.Contains(aItem.LocationId)).ToListAsync();
+
+			return aQueryResult?.Select(aItem => aItem.ToEntity()).ToList();
 		}
 
 		public int AddAutomobile(Automobile theAutomobile)
@@ -62,7 +80,7 @@ namespace TSD.Reference.Data.SQLite.Repositories
 			return aDto?.ToEntity();
 		}
 
-		public async Task<List<Automobile>> GetAutomobilesAsync(IEnumerable<int> theAutomobileIds)
+		public async Task<IEnumerable<Automobile>> GetAutomobilesAsync(IEnumerable<int> theAutomobileIds)
 		{
 			var aResult =
 				await ConnectionAsync.Table<AutomobileDTO>().Where(aItem => theAutomobileIds.Contains(aItem.Id)).ToListAsync();

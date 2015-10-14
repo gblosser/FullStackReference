@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TSD.Reference.Core.Entities;
 
 namespace TSD.Reference.Core.Data
@@ -16,5 +17,6 @@ namespace TSD.Reference.Core.Data
 		Task<int> AddUserAsync(User theUser);
 		Task UpdateUserAsync(User theUser);
 		Task DeleteUserAsync(User theUser);
+		Task<IEnumerable<User>> GetUsersForCustomerAsync(int theCustomerId);
 	}
 }

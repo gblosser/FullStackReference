@@ -1,11 +1,14 @@
-﻿using TSD.Reference.Core.Data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Exceptions;
+using TSD.Reference.Core.Services.Interfaces;
 using TSD.Reference.Core.Services.Validation;
 
 namespace TSD.Reference.Core.Services
 {
-	public class RentalAgreementService
+	public class RentalAgreementService : IRentalAgreementService
 	{
 		private readonly IRentalAgreementRepository _rentalAgreementRepository;
 		private readonly ICustomerRepository _customerRepository;
@@ -60,6 +63,41 @@ namespace TSD.Reference.Core.Services
 			_rentalAgreementRepository.UpdateRentalAgreement(theRentalAgreement);
 
 			return GetRentalAgreement(theRentalAgreement.Id);
+		}
+
+		public async Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement)
+		{
+			var aCustomer = await _customerRepository.GetCustomerAsync(theRentalAgreement.Customer);
+			theRentalAgreement.Validate(aCustomer);     // validate the agreement using the business rules codified in the validation class.
+			return await _rentalAgreementRepository.AddRentalAgreementAsync(theRentalAgreement);
+		}
+
+		public async Task<RentalAgreement> GetRentalAgreementAsync(int theRentalAgreementId)
+		{
+			return await _rentalAgreementRepository.GetRentalAgreementAsync(theRentalAgreementId);
+		}
+
+		public async Task<RentalAgreement> UpdateRentalAgreementAsync(RentalAgreement theRentalAgreement)
+		{
+			var aUser = await _userRepository.GetUserAsync(theRentalAgreement.EmployeeId);
+
+			if (!aUser.IsEmployee)
+				throw new InvalidPermissionsException(
+					$"The user {aUser.LastName}, {aUser.FirstName} is not an employee and cannot modify a rental agreement");
+
+			await _rentalAgreementRepository.UpdateRentalAgreementAsync(theRentalAgreement);
+
+			return await GetRentalAgreementAsync(theRentalAgreement.Id);
+		}
+
+		public async Task<IEnumerable<RentalAgreement>> GetRentalAgreementsForCustomerAsync(int theCustomerId)
+		{
+			return await _rentalAgreementRepository.GetRentalAgreementsForCustomerAsync(theCustomerId);
+		}
+
+		public async Task DeleteRentalAgreementAsync(RentalAgreement theRentalAgreement)
+		{
+			await _rentalAgreementRepository.DeleteRentalAgreementAsync(theRentalAgreement);
 		}
 	}
 }

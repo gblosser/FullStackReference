@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Data.SQLite.DTO;
@@ -52,6 +55,17 @@ namespace TSD.Reference.Data.SQLite.Repositories
 		public async Task DeleteLocationAsync(Location theLocation)
 		{
 			await ConnectionAsync.DeleteAsync(theLocation.ToDTO());
+		}
+
+		public async Task<IEnumerable<Location>> GetLocationsForCustomerAsync(int theCustomerId)
+		{
+			var aLocations = ConnectionAsync.Table<LocationDTO>().Where(aItem => aItem.CustomerId == theCustomerId);
+
+			if (aLocations == null)
+				return null;
+
+			var aLocationList = await aLocations.ToListAsync();
+			return aLocationList?.Select(aItem => aItem.ToEntity()).ToList();
 		}
 	}
 }

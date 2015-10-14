@@ -61,7 +61,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public List<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds)
+		public IEnumerable<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds)
 		{
 			try
 			{
@@ -71,6 +71,122 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 					new NpgsqlCommand(
 						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1", Connection);
 				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theAutomobileIds));
+
+				var aReader = aPreparedCommand.ExecuteReader();
+
+				if (!aReader.HasRows)
+					return Enumerable.Empty<Automobile>().ToList();
+
+				var aReturnList = new List<Automobile>();
+				while (aReader.Read())
+				{
+					Automobile aReturn = new Automobile();
+					aReturn.Id = Convert.ToInt32(aReader["id"]);
+					aReturn.Class = Convert.ToString(aReader["class"]);
+					aReturn.Code = Convert.ToString(aReader["code"]);
+					aReturn.Color = Convert.ToString(aReader["color"]);
+					aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
+					aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
+					aReturn.Model = Convert.ToString(aReader["model"]);
+					aReturn.Name = Convert.ToString(aReader["name"]);
+					aReturn.Style = Convert.ToString(aReader["style"]);
+					aReturn.VIN = Convert.ToString(aReader["vin"]);
+					aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
+					aReturnList.Add(aReturn);
+				}
+				return aReturnList;
+			}
+			catch (NpgsqlException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (InvalidOperationException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (SqlException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theLocationId)
+		{
+			try
+			{
+				await Connection.OpenAsync();
+
+				var aPreparedCommand =
+					new NpgsqlCommand(
+						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = :value1", Connection);
+				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theLocationId));
+
+				var aReader = aPreparedCommand.ExecuteReader();
+
+				if (!aReader.HasRows)
+					return Enumerable.Empty<Automobile>().ToList();
+
+				var aReturnList = new List<Automobile>();
+				while (aReader.Read())
+				{
+					Automobile aReturn = new Automobile();
+					aReturn.Id = Convert.ToInt32(aReader["id"]);
+					aReturn.Class = Convert.ToString(aReader["class"]);
+					aReturn.Code = Convert.ToString(aReader["code"]);
+					aReturn.Color = Convert.ToString(aReader["color"]);
+					aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
+					aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
+					aReturn.Model = Convert.ToString(aReader["model"]);
+					aReturn.Name = Convert.ToString(aReader["name"]);
+					aReturn.Style = Convert.ToString(aReader["style"]);
+					aReturn.VIN = Convert.ToString(aReader["vin"]);
+					aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
+					aReturnList.Add(aReturn);
+				}
+				return aReturnList;
+			}
+			catch (NpgsqlException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (InvalidOperationException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (SqlException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return Enumerable.Empty<Automobile>().ToList();
+			}
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationsAsync(IEnumerable<int> theLocationIds)
+		{
+			try
+			{
+				await Connection.OpenAsync();
+
+				var aPreparedCommand =
+					new NpgsqlCommand(
+						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid in :value1", Connection);
+				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", string.Join(",", theLocationIds)));
 
 				var aReader = aPreparedCommand.ExecuteReader();
 
@@ -262,7 +378,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<List<Automobile>> GetAutomobilesAsync(IEnumerable<int> theAutomobileIds)
+		public async Task<IEnumerable<Automobile>> GetAutomobilesAsync(IEnumerable<int> theAutomobileIds)
 		{
 			try
 			{

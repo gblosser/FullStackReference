@@ -21,7 +21,7 @@ namespace TSD.Reference.Data.SQLite.Repositories
 			return aDriver?.ToEntity();
 		}
 
-		public List<Driver> GetDriverByLastName(string theDriverName)
+		public IEnumerable<Driver> GetDriverByLastName(string theDriverName)
 		{
 			var aResult = Connection.Table<DriverDTO>().Where(aItem =>aItem.LastName.Contains(theDriverName));
 			// if there are no results return an empty list
@@ -52,8 +52,17 @@ namespace TSD.Reference.Data.SQLite.Repositories
 			return aDriver?.ToEntity();
 		}
 
+		public async Task<IEnumerable<Driver>> GetDriversByCustomerAsync(int theCustomerId)
+		{
+			var aResult = await ConnectionAsync.Table<DriverDTO>().Where(aItem => aItem.CustomerId == theCustomerId).ToListAsync();
+			// if there are no results return an empty list
+			if (aResult == null || !aResult.Any())
+				return Enumerable.Empty<Driver>().ToList();
 
-		public async Task<List<Driver>> GetDriverByLastNameAsync(string theDriverName)
+			return aResult.Select(aItem => aItem.ToEntity()).ToList();
+		}
+
+		public async Task<IEnumerable<Driver>> GetDriverByLastNameAsync(string theDriverName)
 		{
 			var aResult = await ConnectionAsync.Table<DriverDTO>().Where(aItem => aItem.LastName.Contains(theDriverName)).ToListAsync();
 			// if there are no results return an empty list

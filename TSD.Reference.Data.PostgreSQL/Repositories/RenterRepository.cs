@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -176,6 +177,53 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				while (await aReader.ReadAsync())
 				{
 					aReturn = ReadRenter(aReader);
+				}
+				return aReturn;
+			}
+			catch (NpgsqlException)
+			{
+				return null;
+			}
+			catch (InvalidOperationException)
+			{
+				return null;
+			}
+			catch (SqlException)
+			{
+				return null;
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return null;
+			}
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<Renter>> GetRentersForCustomerAsync(int theCustomerId)
+		{
+			try
+			{
+				await Connection.OpenAsync();
+
+				var aPreparedCommand =
+					new NpgsqlCommand(
+						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from renter where customer = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+				aPreparedCommand.Parameters.Add(aParam);
+
+				var aReader = await aPreparedCommand.ExecuteReaderAsync();
+
+				if (!aReader.HasRows)
+					return null;
+
+				var aReturn = new List<Renter>();
+				while (await aReader.ReadAsync())
+				{
+					aReturn.Add(ReadRenter(aReader));
 				}
 				return aReturn;
 			}

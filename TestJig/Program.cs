@@ -14,12 +14,6 @@ namespace TestJig
 			Console.ReadKey();
 		}
 
-		static void AutomobileService()
-		{
-			var aAutoRepo = new AutomobileRepository();
-			var _service = new AutomobileService(aAutoRepo);
-		}
-
 		static void CustomerRepo()
 		{
 			var _repository = new CustomerRepository();

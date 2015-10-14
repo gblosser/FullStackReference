@@ -78,7 +78,7 @@ namespace TSD.Reference.Core.test.Services
 		[Fact]
 		public void GetDriverTest()
 		{
-			var aDriver = _svc.GetDriver(2);
+			var aDriver = _svc.GetDriver(1,2);
 
 			Assert.NotNull(aDriver);
 			Assert.Equal(2, aDriver.Id);

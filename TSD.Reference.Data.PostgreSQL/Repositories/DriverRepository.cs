@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Npgsql;
 using NpgsqlTypes;
@@ -61,7 +60,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public List<Driver> GetDriverByLastName(string theDriverName)
+		public IEnumerable<Driver> GetDriverByLastName(string theDriverName)
 		{
 			try
 			{
@@ -252,7 +251,54 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<List<Driver>> GetDriverByLastNameAsync(string theDriverName)
+		public async Task<IEnumerable<Driver>> GetDriversByCustomerAsync(int theCustomerId)
+		{
+			try
+			{
+				await Connection.OpenAsync().ConfigureAwait(false);
+
+				var aPreparedCommand =
+					new NpgsqlCommand(
+						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where customerid = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+				aPreparedCommand.Parameters.Add(aParam);
+
+				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+				if (!aReader.HasRows)
+					return null;
+
+				var aReturn = new List<Driver>();
+				while (await aReader.ReadAsync().ConfigureAwait(false))
+				{
+					aReturn.Add(ReadDriver(aReader));
+				}
+				return aReturn;
+			}
+			catch (NpgsqlException)
+			{
+				return null;
+			}
+			catch (InvalidOperationException)
+			{
+				return null;
+			}
+			catch (SqlException)
+			{
+				return null;
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return null;
+			}
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<Driver>> GetDriverByLastNameAsync(string theDriverName)
 		{
 			try
 			{

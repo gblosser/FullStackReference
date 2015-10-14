@@ -35,6 +35,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -80,6 +81,13 @@
     <Compile Include="src\Services\AutomobileService.cs" />
     <Compile Include="src\Services\CustomerService.cs" />
     <Compile Include="src\Services\DriverService.cs" />
+    <Compile Include="src\Services\Interfaces\IAutomobileService.cs" />
+    <Compile Include="src\Services\Interfaces\ICustomerService.cs" />
+    <Compile Include="src\Services\Interfaces\IDriverService.cs" />
+    <Compile Include="src\Services\Interfaces\ILocationService.cs" />
+    <Compile Include="src\Services\Interfaces\IRentalAgreementService.cs" />
+    <Compile Include="src\Services\Interfaces\IRenterService.cs" />
+    <Compile Include="src\Services\Interfaces\IUserService.cs" />
     <Compile Include="src\Services\LocationService.cs" />
     <Compile Include="src\Services\RentalAgreementService.cs" />
     <Compile Include="src\Services\RenterService.cs" />

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Data.SQLite.DTO;
@@ -38,6 +40,11 @@ namespace TSD.Reference.Data.SQLite.Repositories
 		{
 			var aRenter = await ConnectionAsync.Table<RenterDTO>().Where(aItem => aItem.Id == theRenterId).FirstOrDefaultAsync();
 			return aRenter?.ToEntity();
+		}
+		public async Task<IEnumerable<Renter>> GetRentersForCustomerAsync(int theCustomerId)
+		{
+			var aRenters = await ConnectionAsync.Table<RenterDTO>().Where(aItem => aItem.CustomerId == theCustomerId).ToListAsync();
+			return aRenters.Select(aItem => aItem.ToEntity());
 		}
 
 		public async Task<int> AddRenterAsync(Renter theRenter)

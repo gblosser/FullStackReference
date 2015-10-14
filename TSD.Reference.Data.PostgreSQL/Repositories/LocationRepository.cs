@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -287,6 +288,50 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			// no catch here, this is a reference project
 			// TODO: add catch and actions here
+			finally
+			{
+				if (Connection.State == ConnectionState.Open)
+					Connection.Close();
+			}
+		}
+
+		public async Task<IEnumerable<Location>> GetLocationsForCustomerAsync(int theCustomerId)
+		{
+			try
+			{
+				await Connection.OpenAsync().ConfigureAwait(false);
+
+				var aPreparedCommand = new NpgsqlCommand("SELECT from location where customerid=:value1");
+				aPreparedCommand.Parameters.AddWithValue("value1", theCustomerId);
+
+				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+				if (!aReader.HasRows)
+					return null;
+
+				var aReturn = new List<Location>();
+				while (await aReader.ReadAsync().ConfigureAwait(false))
+				{
+					aReturn.Add(ReadLocation(aReader));
+				}
+				return aReturn;
+			}
+			catch (NpgsqlException)
+			{
+				return null;
+			}
+			catch (InvalidOperationException)
+			{
+				return null;
+			}
+			catch (SqlException)
+			{
+				return null;
+			}
+			catch (ConfigurationErrorsException)
+			{
+				return null;
+			}
 			finally
 			{
 				if (Connection.State == ConnectionState.Open)

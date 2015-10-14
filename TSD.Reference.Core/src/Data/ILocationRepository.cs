@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TSD.Reference.Core.Entities;
 
 namespace TSD.Reference.Core.Data
@@ -14,5 +15,6 @@ namespace TSD.Reference.Core.Data
 		Task<int> AddLocationAsync(Location theLocation);
 		Task UpdateLocationAsync(Location theLocation);
 		Task DeleteLocationAsync(Location theLocation);
+		Task<IEnumerable<Location>>  GetLocationsForCustomerAsync(int theCustomerId);
 	}
 }
