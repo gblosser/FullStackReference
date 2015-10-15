@@ -34,7 +34,7 @@ namespace TSD.Reference.Core.Services
 			// get location ids for customer
 			var aLocations = await _locationRepository.GetLocationsForCustomerAsync(theCustomerId);
 			if(aLocations == null)
-				return null;
+				return Enumerable.Empty<Automobile>();
 
 			// get automobiles for all customer locations
 			return await _autoRepository.GetAutomobilesForLocationsAsync(aLocations.Select(aItem => aItem.Id));

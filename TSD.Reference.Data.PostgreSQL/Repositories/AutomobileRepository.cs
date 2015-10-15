@@ -185,8 +185,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid in :value1", Connection);
-				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", string.Join(",", theLocationIds)));
+						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = any (:value1)", Connection);
+				aPreparedCommand.Parameters.AddWithValue("value1", NpgsqlDbType.Array | NpgsqlDbType.Integer, theLocationIds.ToArray());
 
 				var aReader = aPreparedCommand.ExecuteReader();
 
@@ -212,7 +212,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				}
 				return aReturnList;
 			}
-			catch (NpgsqlException)
+			catch (NpgsqlException ex)
 			{
 				return Enumerable.Empty<Automobile>().ToList();
 			}
@@ -444,7 +444,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
 
 				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(aCommand.ExecuteScalarAsync().ConfigureAwait(false));
+				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
 			}
 			catch (NpgsqlException)
 			{

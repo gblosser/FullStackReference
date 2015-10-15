@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using NpgsqlTypes;
@@ -301,13 +302,13 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			{
 				await Connection.OpenAsync().ConfigureAwait(false);
 
-				var aPreparedCommand = new NpgsqlCommand("SELECT from location where customerid=:value1");
+				var aPreparedCommand = new NpgsqlCommand("SELECT id, customerid, name, address, city, state, postalcode, country, latitude, longitude  from location where customerid=:value1", Connection);
 				aPreparedCommand.Parameters.AddWithValue("value1", theCustomerId);
 
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+				var aReader = await aPreparedCommand.ExecuteReaderAsync();
 
 				if (!aReader.HasRows)
-					return null;
+					return Enumerable.Empty<Location>();
 
 				var aReturn = new List<Location>();
 				while (await aReader.ReadAsync().ConfigureAwait(false))
@@ -318,19 +319,19 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			catch (NpgsqlException)
 			{
-				return null;
+				return Enumerable.Empty<Location>();
 			}
-			catch (InvalidOperationException)
+			catch (InvalidOperationException ex)
 			{
-				return null;
+				return Enumerable.Empty<Location>();
 			}
 			catch (SqlException)
 			{
-				return null;
+				return Enumerable.Empty<Location>();
 			}
 			catch (ConfigurationErrorsException)
 			{
-				return null;
+				return Enumerable.Empty<Location>();
 			}
 			finally
 			{

@@ -25,7 +25,7 @@ namespace TSD.Reference.Core.test.Services
 				{
 					new Automobile
 					{
-						Class = "Full size",
+						Class = "Full Size",
 						Code = "FCAR",
 						Color = "Grey",
 						Id = 1,

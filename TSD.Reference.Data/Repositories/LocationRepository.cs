@@ -62,7 +62,7 @@ namespace TSD.Reference.Data.SQLite.Repositories
 			var aLocations = ConnectionAsync.Table<LocationDTO>().Where(aItem => aItem.CustomerId == theCustomerId);
 
 			if (aLocations == null)
-				return null;
+				return Enumerable.Empty<Location>();
 
 			var aLocationList = await aLocations.ToListAsync();
 			return aLocationList?.Select(aItem => aItem.ToEntity()).ToList();
