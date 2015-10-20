@@ -69,10 +69,9 @@ namespace TSD.Reference.Core.Services
 		public async Task UpdateAutomobileAsync(int theCustomerId, Automobile theAutomobile)
 		{
 			var aLocations = await _locationRepository.GetLocationsForCustomerAsync(theCustomerId);
-			if(aLocations.Any(aItem => aItem.Id == theAutomobile.LocationId))
-				_autoRepository.UpdateAutomobile(theAutomobile);
-
-			throw new ApplicationException("automobile does not belong to customer");
+			if (aLocations.All(aItem => aItem.Id != theAutomobile.LocationId))
+				throw new ApplicationException("automobile does not belong to customer");
+			_autoRepository.UpdateAutomobile(theAutomobile);
 		}
 
 		public int AddAutomobile(Automobile theAutomobile)

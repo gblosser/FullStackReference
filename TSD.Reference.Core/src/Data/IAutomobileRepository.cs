@@ -8,8 +8,6 @@ namespace TSD.Reference.Core.Data
 	{
 		Automobile GetAutomobile(int theAutomobileId);
 		IEnumerable<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds);
-		Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theLocationId);
-		Task<IEnumerable<Automobile>> GetAutomobilesForLocationsAsync(IEnumerable<int> theLocationIds);
 		int AddAutomobile(Automobile theAutomobile);
 		void UpdateAutomobile(Automobile theAutomobile);
 		void DeleteAutomobile(Automobile theAutomobile);
@@ -19,5 +17,7 @@ namespace TSD.Reference.Core.Data
 		Task<int> AddAutomobileAsync(Automobile theAutomobile);
 		Task UpdateAutomobileAsync(Automobile theAutomobile);
 		Task DeleteAutomobileAsync(Automobile theAutomobile);
+		Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theLocationId);
+		Task<IEnumerable<Automobile>> GetAutomobilesForLocationsAsync(IEnumerable<int> theLocationIds);
 	}
 }
