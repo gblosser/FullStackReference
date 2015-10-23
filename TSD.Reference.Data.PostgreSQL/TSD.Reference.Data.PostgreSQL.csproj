@@ -38,6 +38,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="tsd.reference.backup" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Repositories\AbstractRepository.cs" />
@@ -63,6 +64,9 @@
       <Project>{D5EB252B-B41E-48F6-8E76-C7BB71D8E9BF}</Project>
       <Name>TSD.Reference.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="postgresql.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

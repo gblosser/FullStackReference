@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.Core.Entities;
-using TSD.Reference.Core.Services;
 using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.API.Controllers
