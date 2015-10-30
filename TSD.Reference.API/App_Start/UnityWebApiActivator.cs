@@ -1,5 +1,6 @@
 using System.Web.Http;
 using Microsoft.Practices.Unity.WebApi;
+using TSD.Reference.API.Cache;
 using WebApi.OutputCache.Core.Cache;
 using WebApi.OutputCache.V2;
 
@@ -23,6 +24,8 @@ namespace TSD.Reference.API.App_Start
 			// added for WebApi.OutputCache cache output provider
 			GlobalConfiguration.Configuration.CacheOutputConfiguration()
 				.RegisterCacheOutputProvider(() => new MemoryCacheDefault());
+			//GlobalConfiguration.Configuration.CacheOutputConfiguration()
+			//	.RegisterCacheOutputProvider(() => new RedisApiOutputCache());
 			GlobalConfiguration.Configuration.CacheOutputConfiguration()
 				.RegisterDefaultCacheKeyGeneratorProvider(() => new DefaultCacheKeyGenerator());
 		}

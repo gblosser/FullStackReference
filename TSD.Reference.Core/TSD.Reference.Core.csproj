@@ -73,6 +73,7 @@
     <Compile Include="src\Entities\Automobile.cs" />
     <Compile Include="src\Entities\Customer.cs" />
     <Compile Include="src\Entities\Driver.cs" />
+    <Compile Include="src\Entities\HotelRoom.cs" />
     <Compile Include="src\Entities\Location.cs" />
     <Compile Include="src\Entities\RentalAgreement.cs" />
     <Compile Include="src\Entities\Renter.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="src\Services\RentalAgreementService.cs" />
     <Compile Include="src\Services\RenterService.cs" />
     <Compile Include="src\Services\UserService.cs" />
-    <Compile Include="src\Services\Validation\RentalAgreementValidation.cs" />
     <Compile Include="test\Services\AutomobileServiceTest.cs" />
     <Compile Include="test\Services\CustomerServiceTest.cs" />
     <Compile Include="test\Services\DriverServiceTest.cs" />

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Exceptions;
 using TSD.Reference.Core.Services.Interfaces;
-using TSD.Reference.Core.Services.Validation;
 
 namespace TSD.Reference.Core.Services
 {
@@ -31,7 +31,17 @@ namespace TSD.Reference.Core.Services
 		public int AddRentalAgreement(RentalAgreement theRentalAgreement)
 		{
 			var aCustomer = _customerRepository.GetCustomer(theRentalAgreement.Customer);
-			theRentalAgreement.Validate(aCustomer);		// validate the agreement using the business rules codified in the validation class.
+
+			if (!aCustomer.AllowsAdditionalDrivers && theRentalAgreement.AdditionalDrivers.Any())
+				throw new InvalidRentalAgreementException("No additional drivers are allowed", theRentalAgreement);
+
+			if (!aCustomer.AllowsAdditions && theRentalAgreement.Additions.Any())
+				throw new InvalidRentalAgreementException("No additions are allowed", theRentalAgreement);
+
+			var aTimeSpan = theRentalAgreement.InDate.Subtract(theRentalAgreement.OutDate).Days;
+			if (aCustomer.HasMaxRentalDays && aTimeSpan > aCustomer.MaxRentalDays)
+				throw new InvalidRentalAgreementException("Rental agreement exceed the maximum number of rental days allowed for this customer", theRentalAgreement);
+
 			return _rentalAgreementRepository.AddRentalAgreement(theRentalAgreement);
 		}
 
@@ -67,8 +77,6 @@ namespace TSD.Reference.Core.Services
 
 		public async Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
-			var aCustomer = await _customerRepository.GetCustomerAsync(theRentalAgreement.Customer);
-			theRentalAgreement.Validate(aCustomer);     // validate the agreement using the business rules codified in the validation class.
 			return await _rentalAgreementRepository.AddRentalAgreementAsync(theRentalAgreement);
 		}
 

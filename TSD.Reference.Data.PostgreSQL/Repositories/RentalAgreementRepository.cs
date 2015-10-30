@@ -63,6 +63,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public int AddRentalAgreement(RentalAgreement theRentalAgreement)
 		{
+			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+			var aAdditions = theRentalAgreement.Additions;
+
 			try
 			{
 				Connection.Open();
@@ -72,13 +75,25 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-				aCommand.Parameters.AddWithValue("value4",
-					theRentalAgreement.AdditionalDrivers.Any() ? string.Join(";;", theRentalAgreement.AdditionalDrivers) : string.Empty);
+
+				if (aAdditionalDrivers != null)
+					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+				else
+					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
 				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
 				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
 				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-				aCommand.Parameters.AddWithValue("value8",
-					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
+
+				if (aAdditions != null)
+				{
+					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+				}
+				else
+				{
+					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+				}
+
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
 				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 
@@ -110,6 +125,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public void UpdateRentalAgreement(RentalAgreement theRentalAgreement)
 		{
+			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+			var aAdditions = theRentalAgreement.Additions;
+
 			try
 			{
 				Connection.Open();
@@ -119,13 +137,25 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-				aCommand.Parameters.AddWithValue("value4",
-					theRentalAgreement.AdditionalDrivers.Any() ? string.Join(";;", theRentalAgreement.AdditionalDrivers) : string.Empty);
+
+				if (aAdditionalDrivers != null)
+					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+				else
+					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
 				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
 				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
 				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-				aCommand.Parameters.AddWithValue("value8",
-					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
+
+				if (aAdditions != null)
+				{
+					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+				}
+				else
+				{
+					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+				}
+
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
 				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
@@ -210,29 +240,45 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public async Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
+			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+			var aAdditions = theRentalAgreement.Additions;
+
 			try
 			{
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
+					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id",
+					Connection);
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-				aCommand.Parameters.AddWithValue("value4",
-					theRentalAgreement.AdditionalDrivers.Any() ? string.Join(";;", theRentalAgreement.AdditionalDrivers) : string.Empty);
+
+				if (aAdditionalDrivers != null)
+					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+				else
+					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
 				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
 				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
 				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-				aCommand.Parameters.AddWithValue("value8",
-					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
+
+				if (aAdditions != null)
+				{
+					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+				}
+				else
+				{
+					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+				}
+
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
 				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
 			}
-			catch (NpgsqlException)
+			catch (NpgsqlException ex)
 			{
 				return 0;
 			}
@@ -257,6 +303,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public async Task UpdateRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
+			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+			var aAdditions = theRentalAgreement.Additions;
+
 			try
 			{
 				await Connection.OpenAsync().ConfigureAwait(false);
@@ -266,13 +315,25 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
 				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
 				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-				aCommand.Parameters.AddWithValue("value4",
-					theRentalAgreement.AdditionalDrivers.Any() ? string.Join(";;", theRentalAgreement.AdditionalDrivers) : string.Empty);
+
+				if (aAdditionalDrivers != null)
+					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+				else
+					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
 				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
 				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
 				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-				aCommand.Parameters.AddWithValue("value8",
-					theRentalAgreement.Additions.Any() ? string.Join(";;", theRentalAgreement.Additions) : string.Empty);
+
+				if (aAdditions != null)
+				{
+					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+				}
+				else
+				{
+					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+				}
+
 				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
 				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
 				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
@@ -316,8 +377,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where customerid = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where customerid = :value1",
+						Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) {Value = theCustomerId};
 				aPreparedCommand.Parameters.Add(aParam);
 
 				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
@@ -348,6 +410,11 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			{
 				return null;
 			}
+			catch (Exception ex)
+			{
+				string mess = ex.Message;
+				return null;
+			}
 			finally
 			{
 				if (Connection.State == ConnectionState.Open)
@@ -358,13 +425,27 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		private static RentalAgreement ReadRentalAgreement(IDataRecord aReader)
 		{
-			var aAdditionalDriversString = aReader["additionaldrivers"] != DBNull.Value
-				? Convert.ToString(aReader["additionaldrivers"]).Split(';', ';')
-				: Enumerable.Empty<string>();
+			var aAdditionalDriversReader = Convert.ToString(aReader["additionaldrivers"]);
 
-			var aAdditions = aReader["additions"] != DBNull.Value
+			string[] aAdditionalDriversString;
+			if (aReader["additionaldrivers"] != DBNull.Value && aAdditionalDriversReader != string.Empty)
+			{
+				aAdditionalDriversString = Convert.ToString(aReader["additionaldrivers"]).Split(';', ';');
+			}
+			else
+			{
+				   aAdditionalDriversString = Enumerable.Empty<string>().ToArray();
+			}
+
+			//var aAdditionalDriversString = (aReader["additionaldrivers"] != DBNull.Value && aAdditionalDriversReader != string.Empty)
+			//	? Convert.ToString(aReader["additionaldrivers"]).Split(';', ';')
+			//	: Enumerable.Empty<string>().ToArray();
+
+			var aAdditions = (aReader["additions"] != DBNull.Value && Convert.ToString(aReader["additions"]) != string.Empty)
 				? Convert.ToString(aReader["additions"]).Split(';', ';')
-				: Enumerable.Empty<string>();
+				: Enumerable.Empty<string>().ToArray();
+
+			var aIndate = Convert.ToDateTime(aReader["indate"]);
 
 			var aReturn = new RentalAgreement
 			{
@@ -372,12 +453,12 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Customer = Convert.ToInt32(aReader["customerid"]),
 				Location = Convert.ToInt32(aReader["locationid"]),
 				Renter = Convert.ToInt32(aReader["renterid"]),
-				AdditionalDrivers = aAdditionalDriversString.Select(aItem => Convert.ToInt32(aItem)).ToList(),
+				AdditionalDrivers = aAdditionalDriversString.Any() ? aAdditionalDriversString.Select(aItem => Convert.ToInt32(aItem)).ToList() : new List<int>(),
 				Additions = aAdditions.ToList(),
 				Automobile = Convert.ToInt32(aReader["automobileid"]),
-				InDate = Convert.ToDateTime(aReader["indate"]),
+				InDate = aIndate,
 				OutDate = Convert.ToDateTime(aReader["outdate"]),
-				Status = Convert.ToString(aReader["status"]) ,
+				Status = Convert.ToString(aReader["status"]),
 				EmployeeId = Convert.ToInt32(aReader["employeeid"])
 			};
 

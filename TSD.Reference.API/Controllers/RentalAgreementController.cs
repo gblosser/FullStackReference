@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
+using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[AutoInvalidateCacheOutput]
 	public class RentalAgreementController : ApiController
 	{
 		private readonly IRentalAgreementService _rentalAgreementService;
@@ -16,17 +19,29 @@ namespace TSD.Reference.API.Controllers
 			_rentalAgreementService = theRentalAgreementService;
 		}
 		// GET: api/RentalAgreement
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<IEnumerable<RentalAgreement>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();
 
-			return await _rentalAgreementService.GetRentalAgreementsForCustomerAsync(aCustomerId);
+			var aAgreements = await _rentalAgreementService.GetRentalAgreementsForCustomerAsync(aCustomerId);
+
+			if (aAgreements == null)
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+			return aAgreements;
+
 		}
 
 		// GET: api/RentalAgreement/5
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<RentalAgreement> Get(int id)
 		{
-			return await _rentalAgreementService.GetRentalAgreementAsync(id);
+			var aAgreement = await _rentalAgreementService.GetRentalAgreementAsync(id);
+
+			if (aAgreement == null)
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+
+			return aAgreement;
 		}
 
 		// POST: api/RentalAgreement

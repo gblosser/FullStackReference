@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TSD.Reference.Core.Entities
 {
 	/// <summary>
-	/// Vehicle represents a car that Customers can rent to Drivers
+	/// Automobile represents a car that Customers can rent to Drivers
 	/// </summary>
 	public class Automobile
 	{

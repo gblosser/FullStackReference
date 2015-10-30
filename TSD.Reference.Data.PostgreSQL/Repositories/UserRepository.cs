@@ -68,7 +68,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from renter where email = :value1", Connection);
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where email = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theEmail };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -114,7 +114,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into user (firstname, lastname,, email, customerid, isemployee) VALUES (:value1, :value2, :value3, :value4, :value5) RETURNING id", Connection);
+					"Insert into appuser (firstname, lastname, email, customerid, isemployee) VALUES (:value1, :value2, :value3, :value4, :value5) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
@@ -154,7 +154,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE user SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5 where id=:value6;", Connection);
+					"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5 where id=:value6;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
@@ -179,7 +179,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			{
 				Connection.Open();
 
-				var aCommand = new NpgsqlCommand("DELETE from user where id=:value1", Connection);
+				var aCommand = new NpgsqlCommand("DELETE from appuser where id=:value1", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.Id);
 
 				aCommand.ExecuteNonQuery();
@@ -201,7 +201,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from renter where id = :value1", Connection);
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where id = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -248,7 +248,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from renter where customerid = :value1", Connection);
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where customerid = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -295,7 +295,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from renter where email = :value1", Connection);
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where email = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theEmail };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -341,7 +341,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into user (firstname, lastname,, email, customerid, isemployee) VALUES (:value1, :value2, :value3, :value4, :value5) RETURNING id", Connection);
+					"Insert into appuser (firstname, lastname, email, customerid, isemployee) VALUES (:value1, :value2, :value3, :value4, :value5) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
@@ -381,7 +381,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE user SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5 where id=:value6;", Connection);
+					"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5 where id=:value6;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
@@ -406,7 +406,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			{
 				await Connection.OpenAsync().ConfigureAwait(false);
 
-				var aCommand = new NpgsqlCommand("DELETE from user where id=:value1", Connection);
+				var aCommand = new NpgsqlCommand("DELETE from appuser where id=:value1", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.Id);
 
 				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);

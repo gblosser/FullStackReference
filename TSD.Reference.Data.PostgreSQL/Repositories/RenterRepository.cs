@@ -21,7 +21,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from renter where id = :value1", Connection);
+						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid, paymentinfo, insuranceinfo from renter where id = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRenterId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -67,7 +67,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into renter (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
+					"Insert into renter (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid, paymentinfo, insuranceinfo) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10, :value11, :value12) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRenter.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theRenter.LastName);
 				aCommand.Parameters.AddWithValue("value3", theRenter.Address);
@@ -78,6 +78,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8", theRenter.LicenseNumber);
 				aCommand.Parameters.AddWithValue("value9", theRenter.LicenseState);
 				aCommand.Parameters.AddWithValue("value10", theRenter.CustomerId);
+				aCommand.Parameters.AddWithValue("value11", theRenter.PaymentInfo);
+				aCommand.Parameters.AddWithValue("value12", theRenter.InsuranceInfo);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(aCommand.ExecuteScalar());
@@ -112,7 +114,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE renter SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11;", Connection);
+					"UPDATE renter SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10, paymentinfo = :value11, insuranceinfo = :value12 where id=:value13;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRenter.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theRenter.LastName);
 				aCommand.Parameters.AddWithValue("value3", theRenter.Address);
@@ -123,7 +125,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8", theRenter.LicenseNumber);
 				aCommand.Parameters.AddWithValue("value9", theRenter.LicenseState);
 				aCommand.Parameters.AddWithValue("value10", theRenter.CustomerId);
-				aCommand.Parameters.AddWithValue("value11", theRenter.Id);
+				aCommand.Parameters.AddWithValue("value11", theRenter.PaymentInfo);
+				aCommand.Parameters.AddWithValue("value12", theRenter.InsuranceInfo);
+				aCommand.Parameters.AddWithValue("value13", theRenter.Id);
 
 				aCommand.ExecuteNonQuery();
 			}
@@ -164,7 +168,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from renter where id = :value1", Connection);
+						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid, paymentinfo, insuranceinfo from renter where id = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRenterId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -211,7 +215,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from renter where customer = :value1", Connection);
+						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid, paymentinfo, insuranceinfo from renter where customerid = :value1", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
 				aPreparedCommand.Parameters.Add(aParam);
 
@@ -257,7 +261,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync();
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into renter (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
+					"Insert into renter (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid, paymentinfo, insuranceinfo) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10, :value11, :value12) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRenter.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theRenter.LastName);
 				aCommand.Parameters.AddWithValue("value3", theRenter.Address);
@@ -268,6 +272,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8", theRenter.LicenseNumber);
 				aCommand.Parameters.AddWithValue("value9", theRenter.LicenseState);
 				aCommand.Parameters.AddWithValue("value10", theRenter.CustomerId);
+				aCommand.Parameters.AddWithValue("value11", theRenter.PaymentInfo);
+				aCommand.Parameters.AddWithValue("value12", theRenter.InsuranceInfo);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(await aCommand.ExecuteScalarAsync());
@@ -302,7 +308,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync();
 
 				var aCommand = new NpgsqlCommand(
-					"UPDATE renter SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11;", Connection);
+					"UPDATE renter SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10, paymentinfo = :value11, insuranceinfo = :value12 where id=:value13;", Connection);
 				aCommand.Parameters.AddWithValue("value1", theRenter.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theRenter.LastName);
 				aCommand.Parameters.AddWithValue("value3", theRenter.Address);
@@ -313,7 +319,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				aCommand.Parameters.AddWithValue("value8", theRenter.LicenseNumber);
 				aCommand.Parameters.AddWithValue("value9", theRenter.LicenseState);
 				aCommand.Parameters.AddWithValue("value10", theRenter.CustomerId);
-				aCommand.Parameters.AddWithValue("value11", theRenter.Id);
+				aCommand.Parameters.AddWithValue("value11", theRenter.PaymentInfo);
+				aCommand.Parameters.AddWithValue("value12", theRenter.InsuranceInfo);
+				aCommand.Parameters.AddWithValue("value13", theRenter.Id);
 
 				await aCommand.ExecuteNonQueryAsync();
 			}
@@ -360,7 +368,9 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Country=Convert.ToString(aReader["country"]),
 				LicenseNumber = Convert.ToString(aReader["licensenumber"]),
 				LicenseState = Convert.ToString(aReader["licensestate"]),
-				CustomerId = Convert.ToInt32(aReader["customerid"])
+				CustomerId = Convert.ToInt32(aReader["customerid"]),
+				PaymentInfo = Convert.ToString(aReader["paymentinfo"]),
+				InsuranceInfo = Convert.ToString(aReader["insuranceinfo"])
 			};
 
 			return aReturn;

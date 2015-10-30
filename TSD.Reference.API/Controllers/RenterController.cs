@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
+using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[AutoInvalidateCacheOutput]
 	public class RenterController : ApiController
 	{
 		private readonly IRenterService _renterService;
@@ -16,10 +19,16 @@ namespace TSD.Reference.API.Controllers
 			_renterService = theRenterService;
 		}
 		// GET: api/Renter
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<IEnumerable<Renter>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();
-			return await _renterService.GetRentersAsync(aCustomerId);
+
+			var aReturn = await _renterService.GetRentersAsync(aCustomerId);
+
+			if(aReturn == null)
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+			return aReturn;
 		}
 
 		// GET: api/Renter/5
@@ -27,10 +36,16 @@ namespace TSD.Reference.API.Controllers
 		{
 			var aCustomerId = this.GetCustomerId();
 
-			return await _renterService.GetRenterAsync(aCustomerId, id);
+			var aReturn = await _renterService.GetRenterAsync(aCustomerId, id);
+
+			if(aReturn == null)
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+
+			return aReturn;
 		}
 
 		// POST: api/Renter
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<int> Post(Renter renter)
 		{
 			return await _renterService.AddRenterAsync(renter);

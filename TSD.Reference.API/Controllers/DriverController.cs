@@ -4,9 +4,11 @@ using System.Web.Http;
 using TSD.Reference.API.Extensions;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
+using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[AutoInvalidateCacheOutput]
 	public class DriverController : ApiController
 	{
 		private readonly IDriverService _driverService;
@@ -17,6 +19,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Driver
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task< IEnumerable<Driver>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();
@@ -25,6 +28,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Driver/5
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Driver> Get(int id)
 		{
 			var aCustomerId = this.GetCustomerId();

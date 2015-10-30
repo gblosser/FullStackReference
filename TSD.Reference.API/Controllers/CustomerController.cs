@@ -2,9 +2,11 @@
 using System.Web.Http;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
+using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[AutoInvalidateCacheOutput]
 	public class CustomerController : ApiController
 	{
 		private readonly ICustomerService _customerService;
@@ -15,12 +17,14 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Customer
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Customer> Get(string name)
 		{
 			return await _customerService.GetCustomerByNameAsync(name);
 		}
 
 		// GET: api/Customer/5
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Customer> Get(int id)
 		{
 			return await _customerService.GetCustomerByIdAsync(id);
