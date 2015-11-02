@@ -5,6 +5,8 @@ using TSD.Reference.Core.Services;
 using TSD.Reference.Core.Services.Interfaces;
 using TSD.Reference.Data.PostgreSQL.Repositories;
 
+//using TSD.Reference.Data.PostgreSQL.Repositories;
+
 namespace TSD.Reference.API.App_Start
 {
     /// <summary>
@@ -38,8 +40,6 @@ namespace TSD.Reference.API.App_Start
             // NOTE: To load from web.config uncomment the line below. Make sure to add a Microsoft.Practices.Unity.Configuration to the using statements.
             // container.LoadConfiguration();
 
-            // TODO: Register your types here
-            // container.RegisterType<IProductRepository, ProductRepository>();
 	        container.RegisterType<ICustomerRepository, CustomerRepository>(new ContainerControlledLifetimeManager());
 	        container.RegisterType<ICustomerService, CustomerService>(new ContainerControlledLifetimeManager());
 
@@ -61,6 +61,8 @@ namespace TSD.Reference.API.App_Start
 			container.RegisterType<IUserRepository, UserRepository>(new ContainerControlledLifetimeManager());
 			container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
 
-		}
+	        container.RegisterType<ILoginService, LoginService>(new ContainerControlledLifetimeManager());
+
+        }
     }
 }

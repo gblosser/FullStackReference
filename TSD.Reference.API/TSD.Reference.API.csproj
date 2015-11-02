@@ -300,6 +300,7 @@
     <Compile Include="Controllers\DriverController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
+    <Compile Include="Controllers\LogInController.cs" />
     <Compile Include="Controllers\RentalAgreementController.cs" />
     <Compile Include="Controllers\RenterController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -396,6 +397,10 @@
     <ProjectReference Include="..\TSD.Reference.Data.PostgreSQL\TSD.Reference.Data.PostgreSQL.csproj">
       <Project>{977E7D07-9303-4180-8480-B06242B47D47}</Project>
       <Name>TSD.Reference.Data.PostgreSQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TSD.Reference.Data\TSD.Reference.Data.SQLite.csproj">
+      <Project>{146252ab-599f-47dc-8c59-ac32232b9201}</Project>
+      <Name>TSD.Reference.Data.SQLite</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

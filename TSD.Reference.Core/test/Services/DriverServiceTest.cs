@@ -4,13 +4,14 @@ using Moq;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services;
+using TSD.Reference.Core.Services.Interfaces;
 using Xunit;
 
 namespace TSD.Reference.Core.test.Services
 {
 	public class DriverServiceTest
 	{
-		private readonly DriverService _svc;
+		private readonly IDriverService _svc;
 
 		public DriverServiceTest()
 		{
