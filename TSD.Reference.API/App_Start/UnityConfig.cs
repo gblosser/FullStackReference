@@ -4,6 +4,7 @@ using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Services;
 using TSD.Reference.Core.Services.Interfaces;
 using TSD.Reference.Data.PostgreSQL.Repositories;
+//using TSD.Reference.Data.SQLite.Repositories;
 
 //using TSD.Reference.Data.PostgreSQL.Repositories;
 
@@ -61,7 +62,7 @@ namespace TSD.Reference.API.App_Start
 			container.RegisterType<IUserRepository, UserRepository>(new ContainerControlledLifetimeManager());
 			container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
 
-	        container.RegisterType<ILoginService, LoginService>(new ContainerControlledLifetimeManager());
+	        container.RegisterType<ILoginService, LoginService>();
 
         }
     }

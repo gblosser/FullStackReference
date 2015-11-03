@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using TSD.Reference.API.Filters;
 
@@ -21,8 +20,6 @@ namespace TSD.Reference.API
 
 			// Web API configuration and services
 			// Configure Web API to use only bearer token authentication.
-			config.SuppressDefaultHostAuthentication();
-			config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 			config.Filters.Add(new BogusIdentityFilter());
 			config.Filters.Add(new APIExceptionFilterAttribute());
 

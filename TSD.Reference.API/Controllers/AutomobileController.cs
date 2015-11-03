@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
+using TSD.Reference.API.Filters;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
 using WebApi.OutputCache.V2;
@@ -19,7 +20,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Automobile
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<IEnumerable<Automobile>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();
@@ -29,7 +30,7 @@ namespace TSD.Reference.API.Controllers
 
 
 		// GET: api/Automobile/5
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Automobile> Get(int id)
 		{
 			var aCustomerId = this.GetCustomerId();

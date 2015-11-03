@@ -47,7 +47,7 @@ namespace TSD.Reference.Core.test.Services
 
 			var aUserCredentials = _service.DecodeToken(aToken);
 
-			Assert.Equal(_userCredentials.Password, aUserCredentials.Password);
+			Assert.Equal(_userCredentials, aUserCredentials);
 		}
 
 		[Fact]

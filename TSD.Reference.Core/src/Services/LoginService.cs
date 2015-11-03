@@ -12,6 +12,7 @@ namespace TSD.Reference.Core.Services
 	public class LoginService : ILoginService
 	{
 		private const string _phrase = "p_o_c_p_w_d";
+		private const string _bearer = "Bearer ";
 
 		/// <summary>
 		/// Returns an encrypted token for use with UserCredentials
@@ -27,7 +28,7 @@ namespace TSD.Reference.Core.Services
 
 			var aEncryptedJsonObject = StringCipher.Encrypt(aJsonObject, _phrase);
 
-			return aEncryptedJsonObject;
+			return CreateBearerToken(aEncryptedJsonObject);
 		}
 
 		/// <summary>
@@ -89,11 +90,23 @@ namespace TSD.Reference.Core.Services
 
 		private static TemporaryUserCredentials GetDecryptedUserCredentials(string theToken)
 		{
-			var aDecryptedToken = StringCipher.Decrypt(theToken, _phrase);
+			var aTokenString = theToken.Replace(_bearer, string.Empty);
+
+			var aDecryptedToken = StringCipher.Decrypt(aTokenString, _phrase);
 
 			var aUserCredentials = JsonConvert.DeserializeObject<TemporaryUserCredentials>(aDecryptedToken);
 
 			return aUserCredentials;
+		}
+
+		/// <summary>
+		/// Creates the Bearer Token that will be placed on the authorization header
+		/// </summary>
+		/// <param name="theToken"></param>
+		/// <returns></returns>
+		private static string CreateBearerToken(string theToken)
+		{
+			return $"{_bearer}{theToken}";
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using TSD.Reference.API.Filters;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
 
@@ -15,6 +16,7 @@ namespace TSD.Reference.API.Controllers
 
 
 		// POST: api/LogIn
+		//[AllowAnonymous]
 		public string Post(UserCredentials userCredentials)
 		{
 			return _loginService.GetToken(userCredentials, 15);
