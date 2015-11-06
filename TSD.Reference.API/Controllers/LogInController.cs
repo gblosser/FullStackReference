@@ -16,7 +16,7 @@ namespace TSD.Reference.API.Controllers
 
 
 		// POST: api/LogIn
-		//[AllowAnonymous]
+		//[BasicAuthenticationFilter(false)]
 		public string Post(UserCredentials userCredentials)
 		{
 			return _loginService.GetToken(userCredentials, 15);

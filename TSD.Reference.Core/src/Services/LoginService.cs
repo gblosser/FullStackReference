@@ -12,7 +12,8 @@ namespace TSD.Reference.Core.Services
 	public class LoginService : ILoginService
 	{
 		private const string _phrase = "p_o_c_p_w_d";
-		private const string _bearer = "Bearer ";
+		//private const string _bearer = "Bearer ";
+		private const string _basic = "Basic ";
 
 		/// <summary>
 		/// Returns an encrypted token for use with UserCredentials
@@ -90,7 +91,7 @@ namespace TSD.Reference.Core.Services
 
 		private static TemporaryUserCredentials GetDecryptedUserCredentials(string theToken)
 		{
-			var aTokenString = theToken.Replace(_bearer, string.Empty);
+			var aTokenString = theToken.Replace(_basic, string.Empty);
 
 			var aDecryptedToken = StringCipher.Decrypt(aTokenString, _phrase);
 
@@ -106,7 +107,7 @@ namespace TSD.Reference.Core.Services
 		/// <returns></returns>
 		private static string CreateBearerToken(string theToken)
 		{
-			return $"{_bearer}{theToken}";
+			return $"{_basic}{theToken}";
 		}
 
 		/// <summary>

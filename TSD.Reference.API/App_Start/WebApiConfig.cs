@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Linq;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -22,6 +19,8 @@ namespace TSD.Reference.API
 			// Configure Web API to use only bearer token authentication.
 			config.Filters.Add(new BogusIdentityFilter());
 			config.Filters.Add(new APIExceptionFilterAttribute());
+			//config.Filters.Add(new BasicAuthenticationFilter());
+
 
 			// Web API routes
 			config.MapHttpAttributeRoutes();
