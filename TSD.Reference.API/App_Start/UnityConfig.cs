@@ -62,8 +62,6 @@ namespace TSD.Reference.API.App_Start
 			container.RegisterType<IUserRepository, UserRepository>(new ContainerControlledLifetimeManager());
 			container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
 
-	        container.RegisterType<ILoginService, LoginService>();
-
         }
     }
 }

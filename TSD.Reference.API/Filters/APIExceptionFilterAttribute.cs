@@ -29,7 +29,7 @@ namespace TSD.Reference.API.Filters
 			base.OnException(actionExecutedContext);
 		}
 
-		public async override Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
+		public override async Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
 		{
 			// decide how to handle the exception
 			HandleException(actionExecutedContext.Exception);
@@ -56,6 +56,21 @@ namespace TSD.Reference.API.Filters
 				_logger.Error("InvalidRentalAgreementException", aInvalidRentalAgreementException);
 				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent(aInvalidRentalAgreementException.Message) });
 			}
+
+			var aPasswordsDoNotMatchException = theException as PasswordsDoNotMatchException;
+			if (aPasswordsDoNotMatchException != null)
+			{
+				_logger.Info("PasswordsDoNoMatchException", aPasswordsDoNotMatchException);
+				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) {Content = new StringContent(aPasswordsDoNotMatchException.Message)});
+			}
+
+			var aIncorrectCredentialsException = theException as IncorrectCredentialsException;
+			if (aIncorrectCredentialsException != null)
+			{
+				 _logger.Info("IncorrectCredentialsException", aIncorrectCredentialsException);
+				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent(aIncorrectCredentialsException.Message) });
+			}
+
 			
 			// handle generic Exception type here
 			_logger.Error("General Exception", theException);

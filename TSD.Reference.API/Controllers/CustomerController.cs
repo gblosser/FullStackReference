@@ -6,6 +6,7 @@ using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[Authorize]
 	[AutoInvalidateCacheOutput]
 	public class CustomerController : ApiController
 	{
@@ -17,7 +18,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Customer
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Customer> Get(string name)
 		{
 			return await _customerService.GetCustomerByNameAsync(name);

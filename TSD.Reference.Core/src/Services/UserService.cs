@@ -51,5 +51,20 @@ namespace TSD.Reference.Core.Services
 		{
 			await _userRepository.DeleteUserAsync(user);
 		}
+
+		public async Task<bool> VerifyPasswordAsync(string theUserEmail, string thePassword)
+		{
+			return await _userRepository.VerifyPasswordAsync(theUserEmail, thePassword);
+		}
+
+		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword)
+		{
+			return await _userRepository.VerifyPasswordAsync(theUserId, thePassword);
+		}
+
+		public async Task ChangePasswordAsync(PasswordChange thePasswordChange, int theUserId)
+		{
+			await _userRepository.ChangePasswordAsync(thePasswordChange.OldPassword, thePasswordChange.NewPassword, thePasswordChange.ConfirmNewPassword, theUserId);
+		}
 	}
 }

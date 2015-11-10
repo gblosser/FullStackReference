@@ -8,6 +8,7 @@ using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[Authorize]
 	[AutoInvalidateCacheOutput]
 	public class DriverController : ApiController
 	{
@@ -19,7 +20,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/Driver
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task< IEnumerable<Driver>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();

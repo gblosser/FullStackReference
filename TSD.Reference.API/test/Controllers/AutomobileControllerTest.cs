@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -17,6 +18,8 @@ namespace TSD.Reference.API.test.Controllers
 	public class AutomobileControllerTest
 	{
 		private readonly AutomobileController _controller;
+		private readonly ClaimsPrincipal _customer1;
+		private readonly ClaimsPrincipal _customer2;
 
 		public AutomobileControllerTest()
 		{
@@ -91,12 +94,45 @@ namespace TSD.Reference.API.test.Controllers
 				Request = request
 			};
 			_controller.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
+
+			
+			/******************************************************
+							Build Mock User Data
+			*******************************************************/
+			ClaimsIdentity ci1 = new ClaimsIdentity("ci");
+
+			var aClaims1 = new List<Claim>
+				{
+					new Claim("CustomerId", "1"),
+					new Claim("UserId", "1"),
+					new Claim(ClaimTypes.GivenName, "Geoff"),
+					new Claim(ClaimTypes.Surname, "Blosser"),
+				};
+			ci1.AddClaims(aClaims1);
+			ci1.AddClaim(new Claim(ClaimTypes.Role, "Employee"));
+
+			_customer1 = new ClaimsPrincipal(ci1);
+
+			ClaimsIdentity ci2 = new ClaimsIdentity("ci");
+
+			var aClaims2 = new List<Claim>
+				{
+					new Claim("CustomerId", "2"),
+					new Claim("UserId", "1"),
+					new Claim(ClaimTypes.GivenName, "Geoff"),
+					new Claim(ClaimTypes.Surname, "Blosser"),
+				};
+			ci2.AddClaims(aClaims2);
+			ci2.AddClaim(new Claim(ClaimTypes.Role, "Employee"));
+
+			_customer2 = new ClaimsPrincipal(ci2);
 		}
 
 		[Fact]
 		public async Task GetCarsTest()
 		{
-			_controller.Request.Properties["custid"] = 1;
+			_controller.User = _customer1;
+
 			var aCars = await _controller.Get();
 
 			Assert.NotEmpty(aCars);
@@ -105,7 +141,7 @@ namespace TSD.Reference.API.test.Controllers
 		[Fact]
 		public async Task GetCarsEmptyTest()
 		{
-			_controller.Request.Properties["custid"] = 2;
+			_controller.User = _customer2;
 
 			var aCars = await _controller.Get();
 
@@ -115,7 +151,7 @@ namespace TSD.Reference.API.test.Controllers
 		[Fact]
 		public async Task GetCarByIdTest()
 		{
-			_controller.Request.Properties["custid"] = 1;
+			_controller.User = _customer1;
 
 			var aCar = await _controller.Get(1);
 
@@ -125,7 +161,7 @@ namespace TSD.Reference.API.test.Controllers
 		[Fact]
 		public async Task GetCarByIdNullTest()
 		{
-			_controller.Request.Properties["custid"] = 1;
+			_controller.User = _customer1;
 
 			var aCar = await _controller.Get(2);
 

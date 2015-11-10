@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
@@ -9,6 +8,7 @@ using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[Authorize]
 	[AutoInvalidateCacheOutput]
 	public class UserController : ApiController
 	{
@@ -20,7 +20,7 @@ namespace TSD.Reference.API.Controllers
 		}
 
 		// GET: api/User
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<IEnumerable<User>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();

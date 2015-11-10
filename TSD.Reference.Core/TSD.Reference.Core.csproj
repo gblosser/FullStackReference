@@ -82,12 +82,14 @@
     <Compile Include="src\Entities\Driver.cs" />
     <Compile Include="src\Entities\HotelRoom.cs" />
     <Compile Include="src\Entities\Location.cs" />
+    <Compile Include="src\Entities\PasswordChange.cs" />
     <Compile Include="src\Entities\RentalAgreement.cs" />
     <Compile Include="src\Entities\Renter.cs" />
     <Compile Include="src\Entities\User.cs" />
-    <Compile Include="src\Entities\UserCredentials.cs" />
+    <Compile Include="src\Exceptions\IncorrectCredentialsException.cs" />
     <Compile Include="src\Exceptions\InvalidPermissionsException.cs" />
     <Compile Include="src\Exceptions\InvalidRentalAgreementException.cs" />
+    <Compile Include="src\Exceptions\PasswordsDoNotMatchException.cs" />
     <Compile Include="src\Services\AutomobileService.cs" />
     <Compile Include="src\Services\CustomerService.cs" />
     <Compile Include="src\Services\DriverService.cs" />
@@ -95,19 +97,16 @@
     <Compile Include="src\Services\Interfaces\ICustomerService.cs" />
     <Compile Include="src\Services\Interfaces\IDriverService.cs" />
     <Compile Include="src\Services\Interfaces\ILocationService.cs" />
-    <Compile Include="src\Services\Interfaces\ILoginService.cs" />
     <Compile Include="src\Services\Interfaces\IRentalAgreementService.cs" />
     <Compile Include="src\Services\Interfaces\IRenterService.cs" />
     <Compile Include="src\Services\Interfaces\IUserService.cs" />
     <Compile Include="src\Services\LocationService.cs" />
-    <Compile Include="src\Services\LoginService.cs" />
     <Compile Include="src\Services\RentalAgreementService.cs" />
     <Compile Include="src\Services\RenterService.cs" />
     <Compile Include="src\Services\UserService.cs" />
     <Compile Include="test\Services\AutomobileServiceTest.cs" />
     <Compile Include="test\Services\CustomerServiceTest.cs" />
     <Compile Include="test\Services\DriverServiceTest.cs" />
-    <Compile Include="test\Services\LoginServiceTest.cs" />
     <Compile Include="test\Services\RentalAgreementServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>

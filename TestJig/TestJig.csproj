@@ -78,10 +78,6 @@
       <Project>{977e7d07-9303-4180-8480-b06242b47d47}</Project>
       <Name>TSD.Reference.Data.PostgreSQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TSD.Reference.Data\TSD.Reference.Data.SQLite.csproj">
-      <Project>{146252ab-599f-47dc-8c59-ac32232b9201}</Project>
-      <Name>TSD.Reference.Data.SQLite</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

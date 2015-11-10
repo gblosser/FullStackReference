@@ -9,6 +9,7 @@ using WebApi.OutputCache.V2;
 
 namespace TSD.Reference.API.Controllers
 {
+	[Authorize]
 	[AutoInvalidateCacheOutput]
 	public class RentalAgreementController : ApiController
 	{
@@ -18,8 +19,9 @@ namespace TSD.Reference.API.Controllers
 		{
 			_rentalAgreementService = theRentalAgreementService;
 		}
+
 		// GET: api/RentalAgreement
-		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<IEnumerable<RentalAgreement>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();

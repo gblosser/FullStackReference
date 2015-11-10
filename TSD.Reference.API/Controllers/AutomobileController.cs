@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
@@ -10,6 +14,7 @@ using WebApi.OutputCache.V2;
 namespace TSD.Reference.API.Controllers
 {
 	[AutoInvalidateCacheOutput]
+	[Authorize]
 	public class AutomobileController : ApiController
 	{
 		private readonly IAutomobileService _autoService;
@@ -24,13 +29,13 @@ namespace TSD.Reference.API.Controllers
 		public async Task<IEnumerable<Automobile>> Get()
 		{
 			var aCustomerId = this.GetCustomerId();
-
-			return await _autoService.GetAutomobilesForCustomerAsync(aCustomerId);
+			
+			return await _autoService.GetAutomobilesForCustomerAsync(Convert.ToInt32(aCustomerId));
 		}
 
 
 		// GET: api/Automobile/5
-		//[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
+		[CacheOutput(ClientTimeSpan = 60, ServerTimeSpan = 300)]
 		public async Task<Automobile> Get(int id)
 		{
 			var aCustomerId = this.GetCustomerId();

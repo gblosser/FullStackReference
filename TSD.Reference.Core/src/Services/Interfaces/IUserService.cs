@@ -13,5 +13,8 @@ namespace TSD.Reference.Core.Services.Interfaces
 		Task<int> AddUserAsync(User user);
 		Task UpdateUserAsync(User user);
 		Task DeleteUserAsync(User user);
+		Task<bool> VerifyPasswordAsync(string theUserEmail, string thePassword);
+		Task<bool> VerifyPasswordAsync(int theUserId, string thePassword);
+		Task ChangePasswordAsync(PasswordChange thePasswordChange, int theUserId);
 	}
 }
