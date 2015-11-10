@@ -15,7 +15,7 @@ namespace TSD.Reference.API
 		public static void Register(HttpConfiguration config)
 		{
 			// Enable Cross Origin Resource Sharing
-			var cors = new EnableCorsAttribute("http://localhost:56225", "*", "*");
+			var cors = new EnableCorsAttribute("*", "*", "*");
 			config.EnableCors(cors);
 
 			// Web API configuration and services

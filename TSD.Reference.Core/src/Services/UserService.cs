@@ -21,9 +21,9 @@ namespace TSD.Reference.Core.Services
 			return _userRepository.GetUser(theUserId);
 		}
 
-		public User GetUserByEmail(string theUserEmail)
+		public User GetUserByUserName(string theUserName)
 		{
-			return _userRepository.GetUserByEmail(theUserEmail);
+			return _userRepository.GetUserByUserName(theUserName);
 		}
 
 		public async Task<IEnumerable<User>> GetUsersForCustomerAsync(int theCustomerId)

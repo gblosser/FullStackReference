@@ -26,12 +26,17 @@ namespace TSD.Reference.API.Providers
 			//context.TryGetBasicCredentials
 			context.TryGetFormCredentials(out clientId, out clientSecret);
 			// validate clientid and clientsecret. You can omit validating client secret if none is provided in your request (as in sample client request above)
-			if (clientId == "poc")
-				context.Validated();
-			else
-				context.Rejected();
-			return Task.FromResult(0);
 
+			if (context.Request.Method != "OPTIONS")
+			{
+				if (clientId == "poc")
+					context.Validated();
+				else
+					context.Rejected();
+				return Task.FromResult(0);
+			}
+			context.Validated();
+			return Task.FromResult(0);
 		}
 
 		/// <summary>
@@ -46,6 +51,13 @@ namespace TSD.Reference.API.Providers
 		/// <returns></returns>
 		public override Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
 		{
+			var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
+			if (allowedOrigin == null)
+				allowedOrigin = "*";
+
+			context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+
+
 			//we check if the passed username and password are correct.
 			var aUserName = context.UserName;
 			var aPassword = context.Password;
@@ -58,7 +70,7 @@ namespace TSD.Reference.API.Providers
 
 			if (_userService.VerifyPasswordAsync(aUserName, aPassword).Result)
 			{
-				var aUser = _userService.GetUserByEmail(aUserName);
+				var aUser = _userService.GetUserByUserName(aUserName);
 
 				// populate ClaimsIdentity wit user information
 				ClaimsIdentity ci = new ClaimsIdentity("ci");

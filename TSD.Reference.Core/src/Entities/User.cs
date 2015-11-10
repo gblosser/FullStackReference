@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace TSD.Reference.Core.Entities
@@ -21,5 +22,8 @@ namespace TSD.Reference.Core.Entities
 		public string Password { get; set; }
 
 		public bool IsEmployee { get; set; }
+
+		[Required]
+		public string Username { get; set; }
 	}
 }

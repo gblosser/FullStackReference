@@ -7,7 +7,7 @@ namespace TSD.Reference.Core.Services.Interfaces
 	public interface IUserService
 	{
 		User GetUser(int theUserId);
-		User GetUserByEmail(string theUserEmail);
+		User GetUserByUserName(string theUserName);
 		Task<IEnumerable<User>> GetUsersForCustomerAsync(int theCustomerId);
 		Task<User> GetUserAsync(int aCustomerId, int id);
 		Task<int> AddUserAsync(User user);

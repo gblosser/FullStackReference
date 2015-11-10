@@ -10,6 +10,7 @@ using TSD.Reference.Core.Crypto;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Exceptions;
+using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.Data.PostgreSQL.Repositories
 {
@@ -64,7 +65,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public User GetUserByEmail(string theEmail)
+		public User GetUserByUserName(string theUserName)
 		{
 			try
 			{
@@ -72,8 +73,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where email = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theEmail };
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
 				aPreparedCommand.Parameters.Add(aParam);
 
 				var aReader = aPreparedCommand.ExecuteReader();
@@ -200,7 +201,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 		}
 
 
-		public bool VerifyPassword(string theUserEmail, string thePassword)
+		public bool VerifyPassword(string theUserName, string thePassword)
 		{
 			try
 			{
@@ -208,8 +209,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where email = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserEmail };
+						"SELECT password from appuser where username = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
 				aPreparedCommand.Parameters.Add(aParam);
 
 				var aValue = aPreparedCommand.ExecuteScalar();
@@ -286,10 +287,10 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public void ChangePassword(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId)
 		{
-			if(!theNewPassword.Equals(theNewPasswordConfirmed))
+			if (!theNewPassword.Equals(theNewPasswordConfirmed))
 				throw new PasswordsDoNotMatchException("Passwords do not match");
-			
-			if(!VerifyPassword(theUserId, theOldPassword))
+
+			if (!VerifyPassword(theUserId, theOldPassword))
 				throw new IncorrectCredentialsException("Cannot change password, the existing credentials are incorrect");
 
 			try
@@ -376,7 +377,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				if (!aReader.HasRows)
 					return null;
 
-				var aReturn = new List< User>();
+				var aReturn = new List<User>();
 				while (await aReader.ReadAsync().ConfigureAwait(false))
 				{
 					aReturn.Add(ReadUser(aReader));
@@ -406,7 +407,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<bool> VerifyPasswordAsync(string theUserEmail, string thePassword)
+		public async Task<bool> VerifyPasswordAsync(string theUserName, string thePassword)
 		{
 			try
 			{
@@ -414,8 +415,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where email = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserEmail };
+						"SELECT password from appuser where username = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
 				aPreparedCommand.Parameters.Add(aParam);
 
 				var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
@@ -526,7 +527,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<User> GetUserByEmailAsync(string theEmail)
+		public async Task<User> GetUserByUserNameAsync(string theUserName)
 		{
 			try
 			{
@@ -534,8 +535,8 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where email = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theEmail };
+						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1", Connection);
+				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
 				aPreparedCommand.Parameters.Add(aParam);
 
 				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
