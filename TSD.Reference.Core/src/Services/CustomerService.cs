@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
+using TSD.Reference.Core.Exceptions;
 using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.Core.Services
@@ -44,8 +46,19 @@ namespace TSD.Reference.Core.Services
 			return _repository.AddCustomer(theCustomer);
 		}
 
+		/// <summary>
+		/// Adds a new customer to the data store
+		/// </summary>
+		/// <param name="theCustomer">The new customer</param>
+		/// <exception cref="CustomerAddException">Throws CustomerAddException if customer already exists</exception>
+		/// <returns>The Id of the new customer</returns>
 		public async Task<int> AddCustomerAsync(Customer theCustomer)
 		{
+			// check to see that the customer doesn't exist
+			var aExistingCustomer = await _repository.GetCustomerByNameAsync(theCustomer.Name);
+			if (aExistingCustomer != null)
+				throw new  CustomerAddException($"Customer {theCustomer.Name} already exists");
+
 			return await _repository.AddCustomerAsync(theCustomer);
 		}
 

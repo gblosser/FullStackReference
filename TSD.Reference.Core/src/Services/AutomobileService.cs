@@ -33,22 +33,25 @@ namespace TSD.Reference.Core.Services
 		{
 			// get location ids for customer
 			var aLocations = await _locationRepository.GetLocationsForCustomerAsync(theCustomerId);
-			if(aLocations == null)
+			var aLocationsList = aLocations.ToList();
+			if(!aLocationsList.Any())
 				return Enumerable.Empty<Automobile>();
 
 			// get automobiles for all customer locations
-			return await _autoRepository.GetAutomobilesForLocationsAsync(aLocations.Select(aItem => aItem.Id));
+			return await _autoRepository.GetAutomobilesForLocationsAsync(aLocationsList.Select(aItem => aItem.Id));
 		}
 
 		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theCustomerId, int theLocationId)
 		{
 			var aCustomerLocations = await _locationRepository.GetLocationsForCustomerAsync(theCustomerId);
-			if (aCustomerLocations == null)
+			var aCustomerLocationsList = aCustomerLocations.ToList();
+
+			if (!aCustomerLocationsList.Any())
 			{
 				throw new ApplicationException("Customer has no locations");
 			}
 
-			if (aCustomerLocations.All(aItem => aItem.Id != theLocationId))
+			if (aCustomerLocationsList.All(aItem => aItem.Id != theLocationId))
 			{
 				throw new ApplicationException("Customer has no locations with this id");
 			}

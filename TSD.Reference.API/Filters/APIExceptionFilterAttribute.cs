@@ -71,6 +71,13 @@ namespace TSD.Reference.API.Filters
 				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent(aIncorrectCredentialsException.Message) });
 			}
 
+			var aCustomerAddException = theException as CustomerAddException;
+			if (aCustomerAddException != null)
+			{
+				_logger.Info("CustomerAddException", aCustomerAddException);
+				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Conflict) {Content = new StringContent(aCustomerAddException.Message)});
+			}
+
 			
 			// handle generic Exception type here
 			_logger.Error("General Exception", theException);

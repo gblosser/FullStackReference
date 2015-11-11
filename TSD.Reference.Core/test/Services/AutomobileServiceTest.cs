@@ -77,7 +77,9 @@ namespace TSD.Reference.Core.test.Services
 			aMockRepo.Setup(aItem => aItem.GetAutomobilesForLocationAsync(It.IsInRange(2, int.MaxValue, Range.Inclusive)))
 			  .Returns(Task.FromResult(Enumerable.Empty<Automobile>()));
 
-			// var aAutomobile =  await _autoRepository.GetAutomobileAsync(id);
+			aMockRepo.Setup(aItem => aItem.GetAutomobilesForLocationsAsync(It.IsAny<IEnumerable<int>>()))
+				.Returns(Task.FromResult(aAutomobiles.AsEnumerable()));
+
 			aMockRepo.Setup(aItem => aItem.GetAutomobileAsync(1))
 				.Returns(Task.FromResult(aAutomobiles[0]));
 
@@ -111,6 +113,9 @@ namespace TSD.Reference.Core.test.Services
 							State = "New York"
 						}
 				}.AsEnumerable()));
+
+			aMockLocationRepo.Setup(aItem => aItem.GetLocationsForCustomerAsync(2))
+				.Returns(Task.FromResult(Enumerable.Empty<Location>()));
 
 			_svc = new AutomobileService(aMockRepo.Object, aMockLocationRepo.Object);
 		}
@@ -177,7 +182,19 @@ namespace TSD.Reference.Core.test.Services
 		}
 
 		[Fact]
-		public async void UpdateAutmobileAsyncTest()
+		public async Task GetAutomobilesForCustomerWithNoLocationsThrowsTest()
+		{
+			await Assert.ThrowsAsync<ApplicationException>(() => _svc.GetAutomobilesForLocationAsync(2, 2));
+		}
+
+		[Fact]
+		public async Task GetAutomobilesForCustomerForWrongLocationThrowsTest()
+		{
+			await Assert.ThrowsAsync<ApplicationException>(() => _svc.GetAutomobilesForLocationAsync(1, 10));
+		}
+
+		[Fact]
+		public async Task UpdateAutmobileAsyncTest()
 		{
 			var aCar = await _svc.GetAutomobileAsync(1, 1);
 
@@ -189,7 +206,7 @@ namespace TSD.Reference.Core.test.Services
 		}
 
 		[Fact]
-		public async void UpdateAutmobileAsyncThrowsTest()
+		public async Task UpdateAutmobileAsyncThrowsTest()
 		{
 			var aCar = await _svc.GetAutomobileAsync(1, 1);
 
@@ -198,6 +215,22 @@ namespace TSD.Reference.Core.test.Services
 			aCar.LocationId = 3;
 
 			await Assert.ThrowsAsync<ApplicationException>(() => _svc.UpdateAutomobileAsync(1, aCar));
+		}
+
+		[Fact]
+		public async Task GetAutomobilesForCustomerAsyncTest()
+		{
+			var aCars = await _svc.GetAutomobilesForCustomerAsync(1);
+
+			Assert.NotEmpty(aCars);
+		}
+
+		[Fact]
+		public async Task GetAutomobilesForCustomerWithNoLocationsAsyncTest()
+		{
+			var aCars = await _svc.GetAutomobilesForCustomerAsync(2);
+
+			Assert.Empty(aCars);
 		}
 	}
 }
