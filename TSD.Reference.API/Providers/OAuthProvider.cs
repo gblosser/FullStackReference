@@ -46,10 +46,11 @@ namespace TSD.Reference.API.Providers
 		/// grant_type: password
 		/// customer_number
 		/// client_id: poc
+		/// customer_id: <![CDATA[[customer number]]]> </customer>
 		/// </summary>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		public override Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
+		public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
 		{
 			var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
 			if (allowedOrigin == null)
@@ -58,17 +59,33 @@ namespace TSD.Reference.API.Providers
 			context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
 
-			//we check if the passed username and password are correct.
+			// get username
 			var aUserName = context.UserName;
-			var aPassword = context.Password;
 
 			if (string.IsNullOrEmpty(aUserName))
 			{
-				context.SetError("Incorrect Credentials");
+				context.SetError("Incorrect Credentials", "Incorrect Credentials");
 				context.Rejected();
+				return;
 			}
 
-			if (_userService.VerifyPasswordAsync(aUserName, aPassword).Result)
+			// get customer id
+			var aFormData = await context.Request.ReadFormAsync();
+			var aCustomerIdString = aFormData["customer_id"];
+			int aCustomerId;
+
+			if (string.IsNullOrEmpty(aCustomerIdString) || !int.TryParse(aCustomerIdString, out aCustomerId))
+			{
+				context.SetError("Incorrect Credentials", "Incorrect Credentials");
+				context.Rejected();
+				return;
+			}
+
+			// get password
+			var aPassword = context.Password;
+
+			// verify passed credentials
+			if (_userService.VerifyPasswordAsync(aUserName, aPassword, aCustomerId).Result)
 			{
 				var aUser = _userService.GetUserByUserName(aUserName);
 
@@ -96,7 +113,6 @@ namespace TSD.Reference.API.Providers
 				context.SetError("Incorrect Credentials");
 				context.Rejected();
 			}
-			return Task.FromResult(0);
 		}
 
 		public override Task TokenEndpoint(OAuthTokenEndpointContext context)
@@ -109,6 +125,22 @@ namespace TSD.Reference.API.Providers
 
 			return Task.FromResult<object>(null);
 
+		}
+
+		public override Task MatchEndpoint(OAuthMatchEndpointContext context)
+		{
+			if (context.OwinContext.Request.Method == "OPTIONS" && context.IsTokenEndpoint)
+			{
+				context.OwinContext.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "POST" });
+				context.OwinContext.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "accept", "authorization", "content-type" });
+				context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+				context.OwinContext.Response.StatusCode = 200;
+				context.RequestCompleted();
+
+				return Task.FromResult<object>(null);
+			}
+
+			return base.MatchEndpoint(context);
 		}
 	}
 }

@@ -10,7 +10,6 @@ using TSD.Reference.Core.Crypto;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Exceptions;
-using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.Data.PostgreSQL.Repositories
 {
@@ -119,13 +118,14 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				Connection.Open();
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password) VALUES (:value1, :value2, :value3, :value4, :value5, :value6) RETURNING id", Connection);
+					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
 				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
 				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
 				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+				aCommand.Parameters.AddWithValue("value7", theUser.Username);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(aCommand.ExecuteScalar());
@@ -201,7 +201,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 		}
 
 
-		public bool VerifyPassword(string theUserName, string thePassword)
+		public bool VerifyPassword(string theUserName, string thePassword, int theCustomerId)
 		{
 			try
 			{
@@ -209,9 +209,11 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where username = :value1", Connection);
+						"SELECT password from appuser where username = :value1 and customerid = :value2", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
 				aPreparedCommand.Parameters.Add(aParam);
+				aPreparedCommand.Parameters.Add(aCustParam);
 
 				var aValue = aPreparedCommand.ExecuteScalar();
 
@@ -243,7 +245,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public bool VerifyPassword(int theUserId, string thePassword)
+		public bool VerifyPassword(int theUserId, string thePassword, int theCustomerId)
 		{
 			try
 			{
@@ -251,9 +253,11 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where id = :value1", Connection);
+						"SELECT password from appuser where id = :value1 AND customerid = :value2", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
 				aPreparedCommand.Parameters.Add(aParam);
+				aPreparedCommand.Parameters.Add(aCustParam);
 
 				var aValue = aPreparedCommand.ExecuteScalar();
 
@@ -285,12 +289,12 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public void ChangePassword(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId)
+		public void ChangePassword(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId, int theCustomerId)
 		{
 			if (!theNewPassword.Equals(theNewPasswordConfirmed))
 				throw new PasswordsDoNotMatchException("Passwords do not match");
 
-			if (!VerifyPassword(theUserId, theOldPassword))
+			if (!VerifyPassword(theUserId, theOldPassword, theCustomerId))
 				throw new IncorrectCredentialsException("Cannot change password, the existing credentials are incorrect");
 
 			try
@@ -407,7 +411,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<bool> VerifyPasswordAsync(string theUserName, string thePassword)
+		public async Task<bool> VerifyPasswordAsync(string theUserName, string thePassword, int theCustomerId)
 		{
 			try
 			{
@@ -415,9 +419,12 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where username = :value1", Connection);
+						"SELECT password from appuser where username = :value1 and customerid = :value2",
+						 Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
 				aPreparedCommand.Parameters.Add(aParam);
+				aPreparedCommand.Parameters.Add(aCustParam);
 
 				var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
 
@@ -453,7 +460,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword)
+		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword, int theCustomerId)
 		{
 			try
 			{
@@ -461,9 +468,11 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 				var aPreparedCommand =
 					new NpgsqlCommand(
-						"SELECT password from appuser where id = :value1", Connection);
+						"SELECT password from appuser where id = :value1 and customerid = :value2", Connection);
 				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
 				aPreparedCommand.Parameters.Add(aParam);
+				aPreparedCommand.Parameters.Add(aCustParam);
 
 				var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
 
@@ -499,12 +508,12 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 		}
 
-		public async Task ChangePasswordAsync(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId)
+		public async Task ChangePasswordAsync(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId, int theCustomerId)
 		{
 			if (!theNewPassword.Equals(theNewPasswordConfirmed))
 				throw new PasswordsDoNotMatchException("Passwords do not match");
 
-			if (!await VerifyPasswordAsync(theUserId, theOldPassword).ConfigureAwait(false))
+			if (!await VerifyPasswordAsync(theUserId, theOldPassword, theCustomerId).ConfigureAwait(false))
 				throw new IncorrectCredentialsException("Cannot change password, the existing credentials are incorrect");
 
 			try
@@ -581,18 +590,19 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				await Connection.OpenAsync().ConfigureAwait(false);
 
 				var aCommand = new NpgsqlCommand(
-					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password) VALUES (:value1, :value2, :value3, :value4, :value5, :value6) RETURNING id", Connection);
+					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id", Connection);
 				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
 				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
 				aCommand.Parameters.AddWithValue("value3", theUser.Email);
 				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
 				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
 				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+				aCommand.Parameters.AddWithValue("value7", theUser.Username);
 
 				// returns the id from the SELECT, RETURNING sql statement above
 				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
 			}
-			catch (NpgsqlException)
+			catch (NpgsqlException ex)
 			{
 				return 0;
 			}

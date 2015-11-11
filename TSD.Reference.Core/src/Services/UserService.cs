@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Entities;
@@ -52,19 +51,19 @@ namespace TSD.Reference.Core.Services
 			await _userRepository.DeleteUserAsync(user);
 		}
 
-		public async Task<bool> VerifyPasswordAsync(string theUserEmail, string thePassword)
+		public async Task<bool> VerifyPasswordAsync(string theUserEmail, string thePassword, int theCustomerId)
 		{
-			return await _userRepository.VerifyPasswordAsync(theUserEmail, thePassword);
+			return await _userRepository.VerifyPasswordAsync(theUserEmail, thePassword, theCustomerId);
 		}
 
-		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword)
+		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword, int theCustomerId)
 		{
-			return await _userRepository.VerifyPasswordAsync(theUserId, thePassword);
+			return await _userRepository.VerifyPasswordAsync(theUserId, thePassword, theCustomerId);
 		}
 
-		public async Task ChangePasswordAsync(PasswordChange thePasswordChange, int theUserId)
+		public async Task ChangePasswordAsync(PasswordChange thePasswordChange, int theUserId, int theCustomerId)
 		{
-			await _userRepository.ChangePasswordAsync(thePasswordChange.OldPassword, thePasswordChange.NewPassword, thePasswordChange.ConfirmNewPassword, theUserId);
+			await _userRepository.ChangePasswordAsync(thePasswordChange.OldPassword, thePasswordChange.NewPassword, thePasswordChange.ConfirmNewPassword, theUserId, theCustomerId);
 		}
 	}
 }
