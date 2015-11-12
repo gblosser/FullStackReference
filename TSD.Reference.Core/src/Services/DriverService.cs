@@ -25,17 +25,24 @@ namespace TSD.Reference.Core.Services
 			return await _repository.GetDriversByCustomerAsync(theCustomerId);
 		}
 
+		/// <summary>
+		/// Returns the driver for the customer
+		/// </summary>
+		/// <param name="theCustomerId"></param>
+		/// <param name="theDriverId"></param>
+		/// <returns></returns>
 		public Driver GetDriver(int theCustomerId, int theDriverId)
 		{
+			var aDriver = _repository.GetDriver(theDriverId);
 
-			return _repository.GetDriver(theDriverId);
+			return aDriver?.CustomerId == theCustomerId ? aDriver : null;
 		}
 
 		public async Task<Driver> GetDriverAsync(int theCustomerId, int id)
 		{
 			var aDriver = await _repository.GetDriverAsync(id);
 
-			return aDriver.CustomerId == theCustomerId ? aDriver : null;
+			return aDriver?.CustomerId == theCustomerId ? aDriver : null;
 		}
 
 		public async Task<int> AddDriverAsync(Driver driver)

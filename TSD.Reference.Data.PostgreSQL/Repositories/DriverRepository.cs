@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using NpgsqlTypes;
@@ -266,7 +267,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
 
 				if (!aReader.HasRows)
-					return null;
+					return Enumerable.Empty<Driver>();
 
 				var aReturn = new List<Driver>();
 				while (await aReader.ReadAsync().ConfigureAwait(false))
@@ -277,19 +278,19 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			catch (NpgsqlException)
 			{
-				return null;
+				return Enumerable.Empty<Driver>();
 			}
 			catch (InvalidOperationException)
 			{
-				return null;
+				return Enumerable.Empty<Driver>();
 			}
 			catch (SqlException)
 			{
-				return null;
+				return Enumerable.Empty<Driver>();
 			}
 			catch (ConfigurationErrorsException)
 			{
-				return null;
+				return Enumerable.Empty<Driver>();
 			}
 			finally
 			{
