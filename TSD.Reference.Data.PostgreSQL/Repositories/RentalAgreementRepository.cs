@@ -385,7 +385,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
 
 				if (!aReader.HasRows)
-					return null;
+					return Enumerable.Empty<RentalAgreement>();
 
 				var aReturn = new List<RentalAgreement>();
 				while (await aReader.ReadAsync().ConfigureAwait(false))
@@ -396,24 +396,24 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			catch (NpgsqlException)
 			{
-				return null;
+				return Enumerable.Empty<RentalAgreement>();
 			}
 			catch (InvalidOperationException)
 			{
-				return null;
+				return Enumerable.Empty<RentalAgreement>();
 			}
 			catch (SqlException)
 			{
-				return null;
+				return Enumerable.Empty<RentalAgreement>();
 			}
 			catch (ConfigurationErrorsException)
 			{
-				return null;
+				return Enumerable.Empty<RentalAgreement>();
 			}
 			catch (Exception ex)
 			{
 				string mess = ex.Message;
-				return null;
+				return Enumerable.Empty<RentalAgreement>();
 			}
 			finally
 			{
@@ -436,10 +436,6 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			{
 				   aAdditionalDriversString = Enumerable.Empty<string>().ToArray();
 			}
-
-			//var aAdditionalDriversString = (aReader["additionaldrivers"] != DBNull.Value && aAdditionalDriversReader != string.Empty)
-			//	? Convert.ToString(aReader["additionaldrivers"]).Split(';', ';')
-			//	: Enumerable.Empty<string>().ToArray();
 
 			var aAdditions = (aReader["additions"] != DBNull.Value && Convert.ToString(aReader["additions"]) != string.Empty)
 				? Convert.ToString(aReader["additions"]).Split(';', ';')

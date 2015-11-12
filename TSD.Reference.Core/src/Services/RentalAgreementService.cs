@@ -38,6 +38,9 @@ namespace TSD.Reference.Core.Services
 			if (!aCustomer.AllowsAdditions && theRentalAgreement.Additions.Any())
 				throw new InvalidRentalAgreementException("No additions are allowed", theRentalAgreement);
 
+			if(theRentalAgreement.OutDate > theRentalAgreement.InDate)
+				throw new InvalidRentalAgreementException("Rental agreement Out Date occurs after the In Date", theRentalAgreement);
+
 			var aTimeSpan = theRentalAgreement.InDate.Subtract(theRentalAgreement.OutDate).Days;
 			if (aCustomer.HasMaxRentalDays && aTimeSpan > aCustomer.MaxRentalDays)
 				throw new InvalidRentalAgreementException("Rental agreement exceed the maximum number of rental days allowed for this customer", theRentalAgreement);
@@ -77,6 +80,21 @@ namespace TSD.Reference.Core.Services
 
 		public async Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
+			var aCustomer = await _customerRepository.GetCustomerAsync(theRentalAgreement.Customer);
+
+			if (!aCustomer.AllowsAdditionalDrivers && theRentalAgreement.AdditionalDrivers.Any())
+				throw new InvalidRentalAgreementException("No additional drivers are allowed", theRentalAgreement);
+
+			if (!aCustomer.AllowsAdditions && theRentalAgreement.Additions.Any())
+				throw new InvalidRentalAgreementException("No additions are allowed", theRentalAgreement);
+
+			if (theRentalAgreement.OutDate > theRentalAgreement.InDate)
+				throw new InvalidRentalAgreementException("Rental agreement Out Date occurs after the In Date", theRentalAgreement);
+
+			var aTimeSpan = theRentalAgreement.InDate.Subtract(theRentalAgreement.OutDate).Days;
+			if (aCustomer.HasMaxRentalDays && aTimeSpan > aCustomer.MaxRentalDays)
+				throw new InvalidRentalAgreementException("Rental agreement exceed the maximum number of rental days allowed for this customer", theRentalAgreement);
+
 			return await _rentalAgreementRepository.AddRentalAgreementAsync(theRentalAgreement);
 		}
 
