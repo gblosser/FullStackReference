@@ -1,11 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    /// <summary>
-    /// Describes a type model.
-    /// </summary>
-    public abstract class ModelDescription
+	/// <summary>
+	/// Describes a type model.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public abstract class ModelDescription
     {
         public string Documentation { get; set; }
 

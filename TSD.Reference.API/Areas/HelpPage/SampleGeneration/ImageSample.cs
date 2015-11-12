@@ -1,11 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// This represents an image sample on the help page. There's a display template named ImageSample associated with this class.
-    /// </summary>
-    public class ImageSample
+	/// <summary>
+	/// This represents an image sample on the help page. There's a display template named ImageSample associated with this class.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class ImageSample
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageSample"/> class.

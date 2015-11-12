@@ -15,10 +15,11 @@ using Newtonsoft.Json;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// This class will generate the samples for the help page.
-    /// </summary>
-    public class HelpPageSampleGenerator
+	/// <summary>
+	/// This class will generate the samples for the help page.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class HelpPageSampleGenerator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HelpPageSampleGenerator"/> class.

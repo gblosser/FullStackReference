@@ -8,10 +8,11 @@ using System.Reflection;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// This class will create an object of a given type and populate it with sample data.
-    /// </summary>
-    public class ObjectGenerator
+	/// <summary>
+	/// This class will create an object of a given type and populate it with sample data.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class ObjectGenerator
     {
         internal const int DefaultCollectionSize = 2;
         private readonly SimpleTypeObjectGenerator SimpleObjectGenerator = new SimpleTypeObjectGenerator();
@@ -393,7 +394,8 @@ namespace TSD.Reference.API.Areas.HelpPage
             }
         }
 
-        private class SimpleTypeObjectGenerator
+		[ExcludeFromCodeCoverage]
+		private class SimpleTypeObjectGenerator
         {
             private long _index = 0;
             private static readonly Dictionary<Type, Func<long, object>> DefaultGenerators = InitializeGenerators();

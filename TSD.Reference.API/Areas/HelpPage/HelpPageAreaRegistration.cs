@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Http;
 using System.Web.Mvc;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    public class HelpPageAreaRegistration : AreaRegistration
+	[ExcludeFromCodeCoverage]
+	public class HelpPageAreaRegistration : AreaRegistration
     {
         public override string AreaName
         {

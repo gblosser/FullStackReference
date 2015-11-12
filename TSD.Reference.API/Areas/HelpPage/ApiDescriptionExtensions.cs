@@ -1,11 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Web;
 using System.Web.Http.Description;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    public static class ApiDescriptionExtensions
+	[ExcludeFromCodeCoverage]
+	public static class ApiDescriptionExtensions
     {
         /// <summary>
         /// Generates an URI-friendly ID for the <see cref="ApiDescription"/>. E.g. "Get-Values-id_name" instead of "GetValues/{id}?name={name}"

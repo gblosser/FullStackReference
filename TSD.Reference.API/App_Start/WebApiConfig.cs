@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -10,6 +11,7 @@ using TSD.Reference.API.Filters;
 
 namespace TSD.Reference.API
 {
+	[ExcludeFromCodeCoverage]
 	public static class WebApiConfig
 	{
 		public static void Register(HttpConfiguration config)
@@ -20,7 +22,6 @@ namespace TSD.Reference.API
 
 			// Web API configuration and services
 			// Configure Web API to use only bearer token authentication.
-			config.Filters.Add(new BogusIdentityFilter());
 			config.Filters.Add(new APIExceptionFilterAttribute());
 
 			// Web API routes

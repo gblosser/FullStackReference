@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Practices.Unity;
@@ -11,11 +7,10 @@ using Owin;
 using TSD.Reference.API.App_Start;
 using TSD.Reference.API.Providers;
 using TSD.Reference.Core.Services;
-using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.API
 {
-    public partial class Startup
+	public partial class Startup
     {
 		public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 

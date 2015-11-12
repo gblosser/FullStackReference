@@ -1,19 +1,18 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Practices.Unity;
 using TSD.Reference.Core.Data;
 using TSD.Reference.Core.Services;
 using TSD.Reference.Core.Services.Interfaces;
 using TSD.Reference.Data.PostgreSQL.Repositories;
-//using TSD.Reference.Data.SQLite.Repositories;
-
-//using TSD.Reference.Data.PostgreSQL.Repositories;
 
 namespace TSD.Reference.API.App_Start
 {
-    /// <summary>
-    /// Specifies the Unity configuration for the main container.
-    /// </summary>
-    public class UnityConfig
+	/// <summary>
+	/// Specifies the Unity configuration for the main container.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class UnityConfig
     {
         #region Unity Container
         private static Lazy<IUnityContainer> container = new Lazy<IUnityContainer>(() =>

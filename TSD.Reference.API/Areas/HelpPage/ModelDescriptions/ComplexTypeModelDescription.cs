@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class ComplexTypeModelDescription : ModelDescription
+	[ExcludeFromCodeCoverage]
+	public class ComplexTypeModelDescription : ModelDescription
     {
         public ComplexTypeModelDescription()
         {

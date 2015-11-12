@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace TSD.Reference.API.Filters
 	/// To utilize this throughout your API add this line to the Register(...) method in WebApiConfig.cs:
 	/// filters.Add(new APIExceptionFilterAttribute());
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public sealed class APIExceptionFilterAttribute : ExceptionFilterAttribute
 	{
 		// get a log4net logger

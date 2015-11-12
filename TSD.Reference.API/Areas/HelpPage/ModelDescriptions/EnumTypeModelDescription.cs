@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class EnumTypeModelDescription : ModelDescription
+	[ExcludeFromCodeCoverage]
+	public class EnumTypeModelDescription : ModelDescription
     {
         public EnumTypeModelDescription()
         {

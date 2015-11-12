@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace TSD.Reference.Core.Crypto
 {
+	[ExcludeFromCodeCoverage]
 	public static class StringCipher
 	{
 		// This constant string is used as a "salt" value for the PasswordDeriveBytes function calls.

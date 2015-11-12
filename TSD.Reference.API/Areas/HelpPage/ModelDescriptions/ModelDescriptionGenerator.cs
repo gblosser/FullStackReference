@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -13,10 +14,11 @@ using Newtonsoft.Json;
 
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    /// <summary>
-    /// Generates model descriptions for given types.
-    /// </summary>
-    public class ModelDescriptionGenerator
+	/// <summary>
+	/// Generates model descriptions for given types.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class ModelDescriptionGenerator
     {
         // Modify this to support more data annotation attributes.
         private readonly IDictionary<Type, Func<object, string>> AnnotationTextGenerator = new Dictionary<Type, Func<object, string>>

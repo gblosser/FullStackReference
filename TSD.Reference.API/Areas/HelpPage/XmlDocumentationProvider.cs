@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -9,10 +10,11 @@ using TSD.Reference.API.Areas.HelpPage.ModelDescriptions;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// A custom <see cref="IDocumentationProvider"/> that reads the API documentation from an XML documentation file.
-    /// </summary>
-    public class XmlDocumentationProvider : IDocumentationProvider, IModelDocumentationProvider
+	/// <summary>
+	/// A custom <see cref="IDocumentationProvider"/> that reads the API documentation from an XML documentation file.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class XmlDocumentationProvider : IDocumentationProvider, IModelDocumentationProvider
     {
         private XPathNavigator _documentNavigator;
         private const string TypeExpression = "/doc/members/member[@name='T:{0}']";

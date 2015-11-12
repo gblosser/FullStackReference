@@ -16,7 +16,8 @@ using TSD.Reference.API.Areas.HelpPage.Models;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    public static class HelpPageConfigurationExtensions
+	[ExcludeFromCodeCoverage]
+	public static class HelpPageConfigurationExtensions
     {
         private const string ApiModelPrefix = "MS_HelpPageApiModel_";
 

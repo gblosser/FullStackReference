@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis; 
 using System.Security.Claims;
-using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin.Security.OAuth;
 using TSD.Reference.Core.Services.Interfaces;
 
 namespace TSD.Reference.API.Providers
 {
+	[ExcludeFromCodeCoverage]
 	public class OAuthProvider : OAuthAuthorizationServerProvider
 	{
-		IUserService _userService;
+		readonly IUserService _userService;
 
 		public OAuthProvider(IUserService theUserService)
 		{

@@ -303,7 +303,6 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Filters\APIExceptionFilterAttribute.cs" />
-    <Compile Include="Filters\BogusIdentityFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

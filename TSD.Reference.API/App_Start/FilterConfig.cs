@@ -1,8 +1,9 @@
-﻿using System.Web.Mvc;
-using TSD.Reference.API.Filters;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Web.Mvc;
 
 namespace TSD.Reference.API
 {
+	[ExcludeFromCodeCoverage]
 	public class FilterConfig
 	{
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)

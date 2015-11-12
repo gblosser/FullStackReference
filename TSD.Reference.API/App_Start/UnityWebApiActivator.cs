@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Http;
 using Microsoft.Practices.Unity.WebApi;
 using TSD.Reference.API.Cache;
@@ -10,6 +11,7 @@ using WebApi.OutputCache.V2;
 namespace TSD.Reference.API.App_Start
 {
 	/// <summary>Provides the bootstrapping for integrating Unity with WebApi when it is hosted in ASP.NET</summary>
+	[ExcludeFromCodeCoverage]
 	public static class UnityWebApiActivator
 	{
 		/// <summary>Integrates Unity when the application starts.</summary>

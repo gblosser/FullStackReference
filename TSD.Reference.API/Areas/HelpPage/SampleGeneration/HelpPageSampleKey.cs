@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// This is used to identify the place where the sample should be applied.
-    /// </summary>
-    public class HelpPageSampleKey
+	/// <summary>
+	/// This is used to identify the place where the sample should be applied.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class HelpPageSampleKey
     {
         /// <summary>
         /// Creates a new <see cref="HelpPageSampleKey"/> based on media type.

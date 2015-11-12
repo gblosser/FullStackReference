@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
 using TSD.Reference.API.Areas.HelpPage.ModelDescriptions;
 
 namespace TSD.Reference.API.Areas.HelpPage.Models
 {
-    /// <summary>
-    /// The model that represents an API displayed on the help page.
-    /// </summary>
-    public class HelpPageApiModel
+	/// <summary>
+	/// The model that represents an API displayed on the help page.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class HelpPageApiModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HelpPageApiModel"/> class.

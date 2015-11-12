@@ -1,11 +1,13 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage
 {
-    /// <summary>
-    /// This represents a preformatted text sample on the help page. There's a display template named TextSample associated with this class.
-    /// </summary>
-    public class TextSample
+	/// <summary>
+	/// This represents a preformatted text sample on the help page. There's a display template named TextSample associated with this class.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	public class TextSample
     {
         public TextSample(string text)
         {

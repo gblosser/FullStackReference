@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class KeyValuePairModelDescription : ModelDescription
+	[ExcludeFromCodeCoverage]
+	public class KeyValuePairModelDescription : ModelDescription
     {
         public ModelDescription KeyModelDescription { get; set; }
 

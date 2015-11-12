@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class ParameterAnnotation
+	[ExcludeFromCodeCoverage]
+	public class ParameterAnnotation
     {
         public Attribute AnnotationAttribute { get; set; }
 

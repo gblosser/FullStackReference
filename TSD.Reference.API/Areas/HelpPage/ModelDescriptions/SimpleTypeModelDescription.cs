@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class SimpleTypeModelDescription : ModelDescription
+	[ExcludeFromCodeCoverage]
+	public class SimpleTypeModelDescription : ModelDescription
     {
     }
 }

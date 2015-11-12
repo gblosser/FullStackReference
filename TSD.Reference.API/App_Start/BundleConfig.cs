@@ -1,8 +1,9 @@
-﻿using System.Web;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Web.Optimization;
 
 namespace TSD.Reference.API
 {
+	[ExcludeFromCodeCoverage]
 	public class BundleConfig
 	{
 		// For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862

@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TSD.Reference.API.Areas.HelpPage.ModelDescriptions
 {
-    public class CollectionModelDescription : ModelDescription
+	[ExcludeFromCodeCoverage]
+	public class CollectionModelDescription : ModelDescription
     {
         public ModelDescription ElementDescription { get; set; }
     }

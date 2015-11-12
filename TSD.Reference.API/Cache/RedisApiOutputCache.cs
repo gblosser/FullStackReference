@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using StackExchange.Redis;
 using WebApi.OutputCache.Core.Cache;
 
@@ -10,6 +11,7 @@ namespace TSD.Reference.API.Cache
 	/// An implementation of WebApi.OutputCache.Core.Cache.IApiOutputCache that uses Redis as the cache.
 	/// For more information on Asp.NET Web API CacheOutput see https://github.com/filipw/AspNetWebApi-OutputCache
 	/// </summary>
+	[ExcludeFromCodeCoverage]
 	public class RedisApiOutputCache : IApiOutputCache
 	{
 		private static readonly Lazy<ConnectionMultiplexer> LazyConnection =
