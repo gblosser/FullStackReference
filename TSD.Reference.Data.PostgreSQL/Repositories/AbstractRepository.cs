@@ -8,6 +8,6 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 		private readonly string connectionString = ConfigurationManager.ConnectionStrings["PostgreSQL"].ConnectionString;
 		private NpgsqlConnection _connection = null;
 
-		internal NpgsqlConnection Connection => _connection ?? (_connection = new NpgsqlConnection(connectionString));
+		internal NpgsqlConnection GetConnection() => new NpgsqlConnection(connectionString);
 	}
 }

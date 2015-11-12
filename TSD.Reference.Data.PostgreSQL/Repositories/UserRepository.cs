@@ -19,274 +19,272 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 
 		public User GetUser(int theUserId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from renter where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new User();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadUser(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, email, customerid, isemployee from renter where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new User();
+						while (aReader.Read())
+						{
+							aReturn = ReadUser(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
+
 		public User GetUserByUserName(string theUserName)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new User();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadUser(aReader);
+					aPreparedCommand.Connection = aConnection;
+
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new User();
+						while (aReader.Read())
+						{
+							aReturn = ReadUser(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
 			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
 		}
 
 		public int AddUser(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
+						aCommand.Parameters.AddWithValue("value2", theUser.LastName);
+						aCommand.Parameters.AddWithValue("value3", theUser.Email);
+						aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
+						aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
+						aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+						aCommand.Parameters.AddWithValue("value7", theUser.Username);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
-				aCommand.Parameters.AddWithValue("value3", theUser.Email);
-				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
-				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
-				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
-				aCommand.Parameters.AddWithValue("value7", theUser.Username);
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(aCommand.ExecuteScalar());
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
+			}
 
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(aCommand.ExecuteScalar());
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
 		}
 
 		public void UpdateUser(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5, password = :value6 where id=:value7;";
+					aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
+					aCommand.Parameters.AddWithValue("value2", theUser.LastName);
+					aCommand.Parameters.AddWithValue("value3", theUser.Email);
+					aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
+					aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
+					aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+					aCommand.Parameters.AddWithValue("value7", theUser.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5, password = :value6 where id=:value7;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
-				aCommand.Parameters.AddWithValue("value3", theUser.Email);
-				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
-				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
-				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
-				aCommand.Parameters.AddWithValue("value7", theUser.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public void DeleteUser(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
 
-				var aCommand = new NpgsqlCommand("DELETE from appuser where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.Id);
+					aCommand.CommandText = "DELETE from appuser where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theUser.Id);
 
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+
+				}
 			}
 		}
 
-
 		public bool VerifyPassword(string theUserName, string thePassword, int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
+				{
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText = "SELECT password from appuser where username = :value1 and customerid = :value2";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+						var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+						aPreparedCommand.Parameters.Add(aCustParam);
 
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT password from appuser where username = :value1 and customerid = :value2", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
-				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
-				aPreparedCommand.Parameters.Add(aParam);
-				aPreparedCommand.Parameters.Add(aCustParam);
+						var aValue = aPreparedCommand.ExecuteScalar();
 
-				var aValue = aPreparedCommand.ExecuteScalar();
+						var aStoredPassword = Convert.ToString(aValue);
+						var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
 
-				var aStoredPassword = Convert.ToString(aValue);
-				var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
+						return aStoredPassword.Equals(aEncryptedPassword);
+					}
+					catch (NpgsqlException)
+					{
+						return false;
+					}
+					catch (InvalidOperationException)
+					{
+						return false;
+					}
+					catch (SqlException)
+					{
+						return false;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return false;
+					}
+				}
+			}
 
-				return aStoredPassword.Equals(aEncryptedPassword);
-			}
-			catch (NpgsqlException)
-			{
-				return false;
-			}
-			catch (InvalidOperationException)
-			{
-				return false;
-			}
-			catch (SqlException)
-			{
-				return false;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return false;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
 		}
 
 		public bool VerifyPassword(int theUserId, string thePassword, int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
+				{
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText = "SELECT password from appuser where id = :value1 AND customerid = :value2";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+						var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+						aPreparedCommand.Parameters.Add(aCustParam);
 
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT password from appuser where id = :value1 AND customerid = :value2", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
-				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
-				aPreparedCommand.Parameters.Add(aParam);
-				aPreparedCommand.Parameters.Add(aCustParam);
+						var aValue = aPreparedCommand.ExecuteScalar();
 
-				var aValue = aPreparedCommand.ExecuteScalar();
+						var aStoredPassword = Convert.ToString(aValue);
+						var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
 
-				var aStoredPassword = Convert.ToString(aValue);
-				var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
+						return aStoredPassword.Equals(aEncryptedPassword);
+					}
+					catch (NpgsqlException)
+					{
+						return false;
+					}
+					catch (InvalidOperationException)
+					{
+						return false;
+					}
+					catch (SqlException)
+					{
+						return false;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return false;
+					}
+				}
+			}
 
-				return aStoredPassword.Equals(aEncryptedPassword);
-			}
-			catch (NpgsqlException)
-			{
-				return false;
-			}
-			catch (InvalidOperationException)
-			{
-				return false;
-			}
-			catch (SqlException)
-			{
-				return false;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return false;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
 		}
 
 		public void ChangePassword(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId, int theCustomerId)
@@ -297,215 +295,211 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			if (!VerifyPassword(theUserId, theOldPassword, theCustomerId))
 				throw new IncorrectCredentialsException("Cannot change password, the existing credentials are incorrect");
 
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "UPDATE appuser SET password = :value1 where id=:value2;";
+					aCommand.Parameters.AddWithValue("value1", EncryptPlaintextPassword(theNewPassword));
+					aCommand.Parameters.AddWithValue("value2", theUserId);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE appuser SET password = :value1 where id=:value2;", Connection);
-				aCommand.Parameters.AddWithValue("value1", EncryptPlaintextPassword(theNewPassword));
-				aCommand.Parameters.AddWithValue("value2", theUserId);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public async Task<User> GetUserAsync(int theUserId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new User();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadUser(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText = "SELECT id, firstname, lastname, email, customerid, isemployee from appuser where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new User();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn = ReadUser(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
 			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
 		}
 
 		public async Task<IEnumerable<User>> GetUsersForCustomerAsync(int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where customerid = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new List<User>();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn.Add(ReadUser(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where customerid = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new List<User>();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn.Add(ReadUser(aReader));
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
 			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
 		}
 
 		public async Task<bool> VerifyPasswordAsync(string theUserName, string thePassword, int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT password from appuser where username = :value1 and customerid = :value2",
-						 Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
-				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
-				aPreparedCommand.Parameters.Add(aParam);
-				aPreparedCommand.Parameters.Add(aCustParam);
-
-				var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
-
-				var aStoredPassword = Convert.ToString(aValue);
-				if (!string.IsNullOrEmpty(thePassword))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
-					return aStoredPassword.Equals(aEncryptedPassword);
-				}
-				return aStoredPassword.Equals(thePassword);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText = "SELECT password from appuser where username = :value1 and customerid = :value2";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+						var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+						aPreparedCommand.Parameters.Add(aCustParam);
 
+						var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
+
+						var aStoredPassword = Convert.ToString(aValue);
+						if (!string.IsNullOrEmpty(thePassword))
+						{
+							var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
+							return aStoredPassword.Equals(aEncryptedPassword);
+						}
+						return aStoredPassword.Equals(thePassword);
+
+					}
+					catch (NpgsqlException)
+					{
+						return false;
+					}
+					catch (InvalidOperationException)
+					{
+						return false;
+					}
+					catch (SqlException)
+					{
+						return false;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return false;
+					}
+				}
 			}
-			catch (NpgsqlException)
-			{
-				return false;
-			}
-			catch (InvalidOperationException)
-			{
-				return false;
-			}
-			catch (SqlException)
-			{
-				return false;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return false;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
 		}
 
 		public async Task<bool> VerifyPasswordAsync(int theUserId, string thePassword, int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT password from appuser where id = :value1 and customerid = :value2", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
-				var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) {Value = theCustomerId};
-				aPreparedCommand.Parameters.Add(aParam);
-				aPreparedCommand.Parameters.Add(aCustParam);
-
-				var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
-
-				var aStoredPassword = Convert.ToString(aValue);
-				if (!string.IsNullOrEmpty(thePassword))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
-					return aStoredPassword.Equals(aEncryptedPassword);
-				}
-				return aStoredPassword.Equals(thePassword);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText = "SELECT password from appuser where id = :value1 and customerid = :value2";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theUserId };
+						var aCustParam = new NpgsqlParameter("value2", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+						aPreparedCommand.Parameters.Add(aCustParam);
 
+						var aValue = await aPreparedCommand.ExecuteScalarAsync().ConfigureAwait(false);
+
+						var aStoredPassword = Convert.ToString(aValue);
+						if (!string.IsNullOrEmpty(thePassword))
+						{
+							var aEncryptedPassword = EncryptPlaintextPassword(thePassword);
+							return aStoredPassword.Equals(aEncryptedPassword);
+						}
+						return aStoredPassword.Equals(thePassword);
+
+					}
+					catch (NpgsqlException)
+					{
+						return false;
+					}
+					catch (InvalidOperationException)
+					{
+						return false;
+					}
+					catch (SqlException)
+					{
+						return false;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return false;
+					}
+				}
 			}
-			catch (NpgsqlException)
-			{
-				return false;
-			}
-			catch (InvalidOperationException)
-			{
-				return false;
-			}
-			catch (SqlException)
-			{
-				return false;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return false;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
+
 		}
 
 		public async Task ChangePasswordAsync(string theOldPassword, string theNewPassword, string theNewPasswordConfirmed, int theUserId, int theCustomerId)
@@ -516,159 +510,150 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			if (!await VerifyPasswordAsync(theUserId, theOldPassword, theCustomerId).ConfigureAwait(false))
 				throw new IncorrectCredentialsException("Cannot change password, the existing credentials are incorrect");
 
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "UPDATE appuser SET password = :value1 where id=:value2;";
+					aCommand.Parameters.AddWithValue("value1", EncryptPlaintextPassword(theNewPassword));
+					aCommand.Parameters.AddWithValue("value2", theUserId);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE appuser SET password = :value1 where id=:value2;", Connection);
-				aCommand.Parameters.AddWithValue("value1", EncryptPlaintextPassword(theNewPassword));
-				aCommand.Parameters.AddWithValue("value2", theUserId);
-
-				await aCommand.ExecuteNonQueryAsync();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync();
+				}
 			}
 		}
 
 		public async Task<User> GetUserByUserNameAsync(string theUserName)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new User();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadUser(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, email, customerid, isemployee from appuser where username = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theUserName };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new User();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn = ReadUser(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
 			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
+
 		}
 
 		public async Task<int> AddUserAsync(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
+						aCommand.Parameters.AddWithValue("value2", theUser.LastName);
+						aCommand.Parameters.AddWithValue("value3", theUser.Email);
+						aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
+						aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
+						aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+						aCommand.Parameters.AddWithValue("value7", theUser.Username);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into appuser (firstname, lastname, email, customerid, isemployee, password, username) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
-				aCommand.Parameters.AddWithValue("value3", theUser.Email);
-				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
-				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
-				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
-				aCommand.Parameters.AddWithValue("value7", theUser.Username);
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
+					}
+					catch (NpgsqlException ex)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
+			}
 
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
-			}
-			catch (NpgsqlException ex)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
-			}
 		}
 
 		public async Task UpdateUserAsync(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5, password = :value6 where id=:value7;";
+					aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
+					aCommand.Parameters.AddWithValue("value2", theUser.LastName);
+					aCommand.Parameters.AddWithValue("value3", theUser.Email);
+					aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
+					aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
+					aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
+					aCommand.Parameters.AddWithValue("value7", theUser.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE appuser SET firstname = :value1, lastname = :value2, email = :value3, customerid = :value4, isemployee = :value5, password = :value6 where id=:value7;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theUser.LastName);
-				aCommand.Parameters.AddWithValue("value3", theUser.Email);
-				aCommand.Parameters.AddWithValue("value4", theUser.CustomerId);
-				aCommand.Parameters.AddWithValue("value5", theUser.IsEmployee);
-				aCommand.Parameters.AddWithValue("value6", EncryptPlaintextPassword(theUser.Password));
-				aCommand.Parameters.AddWithValue("value7", theUser.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
 		public async Task DeleteUserAsync(User theUser)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
 
-				var aCommand = new NpgsqlCommand("DELETE from appuser where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theUser.Id);
+					aCommand.CommandText = "DELETE from appuser where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theUser.Id);
 
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 

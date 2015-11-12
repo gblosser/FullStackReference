@@ -15,9 +15,11 @@ namespace TSD.Reference.Core.Services
 			_userRepository = theUserRepository;
 		}
 
-		public User GetUser(int theUserId)
+		public User GetUser(int theUserId , int theCustomerId)
 		{
-			return _userRepository.GetUser(theUserId);
+			var aUser = _userRepository.GetUser(theUserId);
+
+			return aUser.CustomerId == theCustomerId ? aUser : null;
 		}
 
 		public User GetUserByUserName(string theUserName)
@@ -30,11 +32,11 @@ namespace TSD.Reference.Core.Services
 			return await _userRepository.GetUsersForCustomerAsync(theCustomerId);
 		}
 
-		public async Task<User> GetUserAsync(int aCustomerId, int id)
+		public async Task<User> GetUserAsync(int id, int theCustomerId)
 		{
 			var aUser = await _userRepository.GetUserAsync(id);
 
-			return aUser.CustomerId == aCustomerId ? aUser : null;
+			return aUser.CustomerId == theCustomerId ? aUser : null;
 		}
 
 		public async Task<int> AddUserAsync(User user)

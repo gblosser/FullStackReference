@@ -16,429 +16,414 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 	{
 		public Driver GetDriver(int theDriverId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theDriverId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new Driver();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadDriver(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theDriverId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new Driver();
+						while (aReader.Read())
+						{
+							aReturn = ReadDriver(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public IEnumerable<Driver> GetDriverByLastName(string theDriverName)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theDriverName };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new List<Driver>();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn.Add(ReadDriver(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theDriverName };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new List<Driver>();
+						while (aReader.Read())
+						{
+							aReturn.Add(ReadDriver(aReader));
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public int AddDriver(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into driver (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
+						aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
+						aCommand.Parameters.AddWithValue("value3", theDriver.Address);
+						aCommand.Parameters.AddWithValue("value4", theDriver.City);
+						aCommand.Parameters.AddWithValue("value5", theDriver.State);
+						aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
+						aCommand.Parameters.AddWithValue("value7", theDriver.Country);
+						aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
+						aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
+						aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into driver (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id",
-					Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
-				aCommand.Parameters.AddWithValue("value3", theDriver.Address);
-				aCommand.Parameters.AddWithValue("value4", theDriver.City);
-				aCommand.Parameters.AddWithValue("value5", theDriver.State);
-				aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
-				aCommand.Parameters.AddWithValue("value7", theDriver.Country);
-				aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
-				aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
-				aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
-
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(aCommand.ExecuteScalar());
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(aCommand.ExecuteScalar());
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public void UpdateDriver(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE driver SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11;";
+					aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
+					aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
+					aCommand.Parameters.AddWithValue("value3", theDriver.Address);
+					aCommand.Parameters.AddWithValue("value4", theDriver.City);
+					aCommand.Parameters.AddWithValue("value5", theDriver.State);
+					aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
+					aCommand.Parameters.AddWithValue("value7", theDriver.Country);
+					aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
+					aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
+					aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
+					aCommand.Parameters.AddWithValue("value11", theDriver.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE driver SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
-				aCommand.Parameters.AddWithValue("value3", theDriver.Address);
-				aCommand.Parameters.AddWithValue("value4", theDriver.City);
-				aCommand.Parameters.AddWithValue("value5", theDriver.State);
-				aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
-				aCommand.Parameters.AddWithValue("value7", theDriver.Country);
-				aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
-				aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
-				aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
-				aCommand.Parameters.AddWithValue("value11", theDriver.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public void DeleteDriver(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from driver where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theDriver.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from driver where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public async Task<Driver> GetDriverAsync(int theDriverId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theDriverId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new Driver();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadDriver(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theDriverId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new Driver();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn = ReadDriver(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<IEnumerable<Driver>> GetDriversByCustomerAsync(int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where customerid = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<Driver>();
-
-				var aReturn = new List<Driver>();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn.Add(ReadDriver(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where customerid = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<Driver>();
+
+						var aReturn = new List<Driver>();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn.Add(ReadDriver(aReader));
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return Enumerable.Empty<Driver>();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<Driver>();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<Driver>();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<Driver>();
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return Enumerable.Empty<Driver>();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<Driver>();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<Driver>();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<Driver>();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<IEnumerable<Driver>> GetDriverByLastNameAsync(string theDriverName)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theDriverName };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new List<Driver>();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn.Add(ReadDriver(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid from driver where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Text) { Value = theDriverName };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new List<Driver>();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn.Add(ReadDriver(aReader));
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<int> AddDriverAsync(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into driver (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
+						aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
+						aCommand.Parameters.AddWithValue("value3", theDriver.Address);
+						aCommand.Parameters.AddWithValue("value4", theDriver.City);
+						aCommand.Parameters.AddWithValue("value5", theDriver.State);
+						aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
+						aCommand.Parameters.AddWithValue("value7", theDriver.Country);
+						aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
+						aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
+						aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into driver (firstname, lastname, address, city, state, postalcode, country, licensenumber, licensestate, customerid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
-				aCommand.Parameters.AddWithValue("value3", theDriver.Address);
-				aCommand.Parameters.AddWithValue("value4", theDriver.City);
-				aCommand.Parameters.AddWithValue("value5", theDriver.State);
-				aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
-				aCommand.Parameters.AddWithValue("value7", theDriver.Country);
-				aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
-				aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
-				aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
-
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public async Task UpdateDriverAsync(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE driver SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11";
+					aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
+					aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
+					aCommand.Parameters.AddWithValue("value3", theDriver.Address);
+					aCommand.Parameters.AddWithValue("value4", theDriver.City);
+					aCommand.Parameters.AddWithValue("value5", theDriver.State);
+					aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
+					aCommand.Parameters.AddWithValue("value7", theDriver.Country);
+					aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
+					aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
+					aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
+					aCommand.Parameters.AddWithValue("value11", theDriver.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE driver SET firstname = :value1, lastname = :value2, address = :value3, city = :value4, state = :value5, postalcode = :value6, country = :value7, licensenumber = :value8, licensestate = :value9, customerid = :value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.FirstName);
-				aCommand.Parameters.AddWithValue("value2", theDriver.LastName);
-				aCommand.Parameters.AddWithValue("value3", theDriver.Address);
-				aCommand.Parameters.AddWithValue("value4", theDriver.City);
-				aCommand.Parameters.AddWithValue("value5", theDriver.State);
-				aCommand.Parameters.AddWithValue("value6", theDriver.PostalCode);
-				aCommand.Parameters.AddWithValue("value7", theDriver.Country);
-				aCommand.Parameters.AddWithValue("value8", theDriver.LicenseNumber);
-				aCommand.Parameters.AddWithValue("value9", theDriver.LicenseState);
-				aCommand.Parameters.AddWithValue("value10", theDriver.CustomerId);
-				aCommand.Parameters.AddWithValue("value11", theDriver.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
 		public async Task DeleteDriverAsync(Driver theDriver)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from driver where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theDriver.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from driver where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theDriver.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 

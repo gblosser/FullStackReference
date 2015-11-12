@@ -16,409 +16,396 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 	{
 		public RentalAgreement GetRentalAgreement(int theRentalAgreementId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new RentalAgreement();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadRentalAgreement(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new RentalAgreement();
+						while (aReader.Read())
+						{
+							aReturn = ReadRentalAgreement(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public int AddRentalAgreement(RentalAgreement theRentalAgreement)
 		{
-			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
-			var aAdditions = theRentalAgreement.Additions;
-
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aCommand = new NpgsqlCommand(
-					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
-				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
-				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-
-				if (aAdditionalDrivers != null)
-					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
-				else
-					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
-
-				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
-				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
-				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-
-				if (aAdditions != null)
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
 				{
-					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
-				}
-				else
-				{
-					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
-				}
+					aCommand.Connection = aConnection;
 
-				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+					var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+					var aAdditions = theRentalAgreement.Additions;
 
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(aCommand.ExecuteScalar());
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					try
+					{
+						aCommand.CommandText =
+							"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
+						aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
+						aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
+
+						if (aAdditionalDrivers != null)
+							aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+						else
+							aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
+						aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
+						aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
+						aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
+
+						if (aAdditions != null)
+						{
+							aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+						}
+						else
+						{
+							aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+						}
+
+						aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+						aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(aCommand.ExecuteScalar());
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public void UpdateRentalAgreement(RentalAgreement theRentalAgreement)
 		{
-			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
-			var aAdditions = theRentalAgreement.Additions;
-
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aCommand = new NpgsqlCommand(
-					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
-				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
-				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-
-				if (aAdditionalDrivers != null)
-					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
-				else
-					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
-
-				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
-				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
-				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-
-				if (aAdditions != null)
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
 				{
-					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
-				}
-				else
-				{
-					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
-				}
+					aCommand.Connection = aConnection;
 
-				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
-				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
+					var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+					var aAdditions = theRentalAgreement.Additions;
 
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.CommandText =
+						"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;";
+					aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
+					aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
+					aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
+
+					if (aAdditionalDrivers != null)
+						aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+					else
+						aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
+					aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
+					aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
+					aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
+
+					if (aAdditions != null)
+					{
+						aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+					}
+					else
+					{
+						aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+					}
+
+					aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+					aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+					aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
+
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public void DeleteRentalAgreement(RentalAgreement theRentalAgreement)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from rentalagreement where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from rentalagreement where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery(); GetConnection().Close();
+				}
 			}
 		}
 
 		public async Task<RentalAgreement> GetRentalAgreementAsync(int theRentalAgreementId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new RentalAgreement();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadRentalAgreement(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theRentalAgreementId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new RentalAgreement();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn = ReadRentalAgreement(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<int> AddRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
-			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
-			var aAdditions = theRentalAgreement.Additions;
-
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aCommand = new NpgsqlCommand(
-					"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id",
-					Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
-				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
-				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-
-				if (aAdditionalDrivers != null)
-					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
-				else
-					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
-
-				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
-				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
-				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-
-				if (aAdditions != null)
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
 				{
-					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
-				}
-				else
-				{
-					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
-				}
+					aCommand.Connection = aConnection;
 
-				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+					try
+					{
+						var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+						var aAdditions = theRentalAgreement.Additions;
 
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
-			}
-			catch (NpgsqlException ex)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+						aCommand.CommandText =
+							"Insert into rentalagreement (customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
+						aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
+						aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
+
+						if (aAdditionalDrivers != null)
+							aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+						else
+							aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
+						aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
+						aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
+						aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
+
+						if (aAdditions != null)
+						{
+							aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+						}
+						else
+						{
+							aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+						}
+
+						aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+						aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
+					}
+					catch (NpgsqlException ex)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public async Task UpdateRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
-			var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
-			var aAdditions = theRentalAgreement.Additions;
-
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aCommand = new NpgsqlCommand(
-					"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
-				aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
-				aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
-
-				if (aAdditionalDrivers != null)
-					aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
-				else
-					aCommand.Parameters.AddWithValue("value4", DBNull.Value);
-
-				aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
-				aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
-				aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
-
-				if (aAdditions != null)
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
 				{
-					aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
-				}
-				else
-				{
-					aCommand.Parameters.AddWithValue("value8", DBNull.Value);
-				}
+					aCommand.Connection = aConnection;
+					var aAdditionalDrivers = theRentalAgreement.AdditionalDrivers;
+					var aAdditions = theRentalAgreement.Additions;
 
-				aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
-				aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
-				aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
+					aCommand.CommandText =
+						"UPDATE rentalagreement SET customerid = :value1, locationid = :value2, renterid = :value3, additionaldrivers = :value4, outdate = :value5, indate = :value6, automobileid = :value7, additions = :value8, status = :value9, employeeid = :value10 where id=:value11;";
+					aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Customer);
+					aCommand.Parameters.AddWithValue("value2", theRentalAgreement.Location);
+					aCommand.Parameters.AddWithValue("value3", theRentalAgreement.Renter);
 
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					if (aAdditionalDrivers != null)
+						aCommand.Parameters.AddWithValue("value4", string.Join(";;", theRentalAgreement.AdditionalDrivers));
+					else
+						aCommand.Parameters.AddWithValue("value4", DBNull.Value);
+
+					aCommand.Parameters.AddWithValue("value5", theRentalAgreement.OutDate);
+					aCommand.Parameters.AddWithValue("value6", theRentalAgreement.InDate);
+					aCommand.Parameters.AddWithValue("value7", theRentalAgreement.Automobile);
+
+					if (aAdditions != null)
+					{
+						aCommand.Parameters.AddWithValue("value8", string.Join(";;", theRentalAgreement.Additions));
+					}
+					else
+					{
+						aCommand.Parameters.AddWithValue("value8", DBNull.Value);
+					}
+
+					aCommand.Parameters.AddWithValue("value9", theRentalAgreement.Status);
+					aCommand.Parameters.AddWithValue("value10", theRentalAgreement.EmployeeId);
+					aCommand.Parameters.AddWithValue("value11", theRentalAgreement.Id);
+
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
 		public async Task DeleteRentalAgreementAsync(RentalAgreement theRentalAgreement)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from rentalagreement where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from rentalagreement where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theRentalAgreement.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
 		public async Task<IEnumerable<RentalAgreement>> GetRentalAgreementsForCustomerAsync(int theCustomerId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where customerid = :value1",
-						Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) {Value = theCustomerId};
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<RentalAgreement>();
-
-				var aReturn = new List<RentalAgreement>();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn.Add(ReadRentalAgreement(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, customerid, locationid, renterid, additionaldrivers, outdate, indate, automobileid, additions, status, employeeid from rentalagreement where customerid = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theCustomerId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<RentalAgreement>();
+
+						var aReturn = new List<RentalAgreement>();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn.Add(ReadRentalAgreement(aReader));
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return Enumerable.Empty<RentalAgreement>();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<RentalAgreement>();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<RentalAgreement>();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<RentalAgreement>();
+					}
+					catch (Exception ex)
+					{
+						string mess = ex.Message;
+						return Enumerable.Empty<RentalAgreement>();
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return Enumerable.Empty<RentalAgreement>();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<RentalAgreement>();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<RentalAgreement>();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<RentalAgreement>();
-			}
-			catch (Exception ex)
-			{
-				string mess = ex.Message;
-				return Enumerable.Empty<RentalAgreement>();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
@@ -434,7 +421,7 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 			}
 			else
 			{
-				   aAdditionalDriversString = Enumerable.Empty<string>().ToArray();
+				aAdditionalDriversString = Enumerable.Empty<string>().ToArray();
 			}
 
 			var aAdditions = (aReader["additions"] != DBNull.Value && Convert.ToString(aReader["additions"]) != string.Empty)

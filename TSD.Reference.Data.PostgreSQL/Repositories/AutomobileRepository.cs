@@ -16,507 +16,493 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 	{
 		public Automobile GetAutomobile(int theAutomobileId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theAutomobileId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new Automobile();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadAutomobile(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theAutomobileId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new Automobile();
+						while (aReader.Read())
+						{
+							aReturn = ReadAutomobile(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public IEnumerable<Automobile> GetAutomobiles(IEnumerable<int> theAutomobileIds)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1", Connection);
-				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theAutomobileIds));
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<Automobile>().ToList();
-
-				var aReturnList = new List<Automobile>();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					Automobile aReturn = new Automobile();
-					aReturn.Id = Convert.ToInt32(aReader["id"]);
-					aReturn.Class = Convert.ToString(aReader["class"]);
-					aReturn.Code = Convert.ToString(aReader["code"]);
-					aReturn.Color = Convert.ToString(aReader["color"]);
-					aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
-					aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
-					aReturn.Model = Convert.ToString(aReader["model"]);
-					aReturn.Name = Convert.ToString(aReader["name"]);
-					aReturn.Style = Convert.ToString(aReader["style"]);
-					aReturn.VIN = Convert.ToString(aReader["vin"]);
-					aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
-					aReturnList.Add(aReturn);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1";
+						aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theAutomobileIds));
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<Automobile>().ToList();
+
+						var aReturnList = new List<Automobile>();
+						while (aReader.Read())
+						{
+							Automobile aReturn = new Automobile();
+							aReturn.Id = Convert.ToInt32(aReader["id"]);
+							aReturn.Class = Convert.ToString(aReader["class"]);
+							aReturn.Code = Convert.ToString(aReader["code"]);
+							aReturn.Color = Convert.ToString(aReader["color"]);
+							aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
+							aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
+							aReturn.Model = Convert.ToString(aReader["model"]);
+							aReturn.Name = Convert.ToString(aReader["name"]);
+							aReturn.Style = Convert.ToString(aReader["style"]);
+							aReturn.VIN = Convert.ToString(aReader["vin"]);
+							aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
+							aReturnList.Add(aReturn);
+						}
+						return aReturnList;
+					}
+					catch (NpgsqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
 				}
-				return aReturnList;
-			}
-			catch (NpgsqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationAsync(int theLocationId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = :value1", Connection);
-				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theLocationId));
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<Automobile>().ToList();
-
-				var aReturnList = new List<Automobile>();
-				while (aReader.Read())
+				aConnection.Open();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					Automobile aReturn = new Automobile();
-					aReturn.Id = Convert.ToInt32(aReader["id"]);
-					aReturn.Class = Convert.ToString(aReader["class"]);
-					aReturn.Code = Convert.ToString(aReader["code"]);
-					aReturn.Color = Convert.ToString(aReader["color"]);
-					aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
-					aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
-					aReturn.Model = Convert.ToString(aReader["model"]);
-					aReturn.Name = Convert.ToString(aReader["name"]);
-					aReturn.Style = Convert.ToString(aReader["style"]);
-					aReturn.VIN = Convert.ToString(aReader["vin"]);
-					aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
-					aReturnList.Add(aReturn);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = :value1";
+						aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theLocationId));
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<Automobile>().ToList();
+
+						var aReturnList = new List<Automobile>();
+						while (aReader.Read())
+						{
+							Automobile aReturn = new Automobile();
+							aReturn.Id = Convert.ToInt32(aReader["id"]);
+							aReturn.Class = Convert.ToString(aReader["class"]);
+							aReturn.Code = Convert.ToString(aReader["code"]);
+							aReturn.Color = Convert.ToString(aReader["color"]);
+							aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
+							aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
+							aReturn.Model = Convert.ToString(aReader["model"]);
+							aReturn.Name = Convert.ToString(aReader["name"]);
+							aReturn.Style = Convert.ToString(aReader["style"]);
+							aReturn.VIN = Convert.ToString(aReader["vin"]);
+							aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
+							aReturnList.Add(aReturn);
+						}
+						return aReturnList;
+					}
+					catch (NpgsqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
 				}
-				return aReturnList;
-			}
-			catch (NpgsqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<IEnumerable<Automobile>> GetAutomobilesForLocationsAsync(IEnumerable<int> theLocationIds)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync();
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = any (:value1)", Connection);
-				aPreparedCommand.Parameters.AddWithValue("value1", NpgsqlDbType.Array | NpgsqlDbType.Integer, theLocationIds.ToArray());
-
-				var aReader = aPreparedCommand.ExecuteReader();
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<Automobile>().ToList();
-
-				var aReturnList = new List<Automobile>();
-				while (aReader.Read())
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					Automobile aReturn = new Automobile();
-					aReturn.Id = Convert.ToInt32(aReader["id"]);
-					aReturn.Class = Convert.ToString(aReader["class"]);
-					aReturn.Code = Convert.ToString(aReader["code"]);
-					aReturn.Color = Convert.ToString(aReader["color"]);
-					aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
-					aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
-					aReturn.Model = Convert.ToString(aReader["model"]);
-					aReturn.Name = Convert.ToString(aReader["name"]);
-					aReturn.Style = Convert.ToString(aReader["style"]);
-					aReturn.VIN = Convert.ToString(aReader["vin"]);
-					aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
-					aReturnList.Add(aReturn);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where locationid = any (:value1)";
+						aPreparedCommand.Parameters.AddWithValue("value1", NpgsqlDbType.Array | NpgsqlDbType.Integer, theLocationIds.ToArray());
+
+						var aReader = aPreparedCommand.ExecuteReader();
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<Automobile>().ToList();
+
+						var aReturnList = new List<Automobile>();
+						while (aReader.Read())
+						{
+							Automobile aReturn = new Automobile();
+							aReturn.Id = Convert.ToInt32(aReader["id"]);
+							aReturn.Class = Convert.ToString(aReader["class"]);
+							aReturn.Code = Convert.ToString(aReader["code"]);
+							aReturn.Color = Convert.ToString(aReader["color"]);
+							aReturn.LocationId = Convert.ToInt32(aReader["locationid"]);
+							aReturn.Manufacturer = Convert.ToString(aReader["manufacturer"]);
+							aReturn.Model = Convert.ToString(aReader["model"]);
+							aReturn.Name = Convert.ToString(aReader["name"]);
+							aReturn.Style = Convert.ToString(aReader["style"]);
+							aReturn.VIN = Convert.ToString(aReader["vin"]);
+							aReturn.VehicleNumber = Convert.ToString(aReader["vehiclenumber"]);
+							aReturnList.Add(aReturn);
+						}
+						return aReturnList;
+					}
+					catch (NpgsqlException ex)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
 				}
-				return aReturnList;
-			}
-			catch (NpgsqlException ex)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public int AddAutomobile(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into automobile (vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
+						aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
+						aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
+						aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
+						aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
+						aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
+						aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
+						aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
+						aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
+						aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into automobile (vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
-				aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
-				aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
-				aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
-				aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
-				aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
-				aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
-				aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
-				aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
-				aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
-
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(aCommand.ExecuteScalar());
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(aCommand.ExecuteScalar());
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public void UpdateAutomobile(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE automobile SET vin=:value1, vehiclenumber=:value2, name=:value3, class=:value4, style=:value5, color=:value6, manufacturer=:value7, model=:value8, code=:value9, locationid=:value10 where id=:value11;";
+					aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
+					aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
+					aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
+					aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
+					aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
+					aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
+					aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
+					aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
+					aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
+					aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
+					aCommand.Parameters.AddWithValue("value11", theAutomobile.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE automobile SET vin=:value1, vehiclenumber=:value2, name=:value3, class=:value4, style=:value5, color=:value6, manufacturer=:value7, model=:value8, code=:value9, locationid=:value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
-				aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
-				aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
-				aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
-				aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
-				aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
-				aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
-				aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
-				aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
-				aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
-				aCommand.Parameters.AddWithValue("value11", theAutomobile.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public void DeleteAutomobile(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				Connection.Open();
+				aConnection.Open();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from automobile where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theAutomobile.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from automobile where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.Id);
-
-				aCommand.ExecuteNonQuery();
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					aCommand.ExecuteNonQuery();
+				}
 			}
 		}
 
 		public async Task<Automobile> GetAutomobileAsync(int theAutomobileId)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1", Connection);
-				var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theAutomobileId };
-				aPreparedCommand.Parameters.Add(aParam);
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-				if (!aReader.HasRows)
-					return null;
-
-				var aReturn = new Automobile();
-				while (await aReader.ReadAsync().ConfigureAwait(false))
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturn = ReadAutomobile(aReader);
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1";
+						var aParam = new NpgsqlParameter("value1", NpgsqlDbType.Integer) { Value = theAutomobileId };
+						aPreparedCommand.Parameters.Add(aParam);
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync().ConfigureAwait(false);
+
+						if (!aReader.HasRows)
+							return null;
+
+						var aReturn = new Automobile();
+						while (await aReader.ReadAsync().ConfigureAwait(false))
+						{
+							aReturn = ReadAutomobile(aReader);
+						}
+						return aReturn;
+					}
+					catch (NpgsqlException)
+					{
+						return null;
+					}
+					catch (InvalidOperationException)
+					{
+						return null;
+					}
+					catch (SqlException)
+					{
+						return null;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return null;
+					}
 				}
-				return aReturn;
-			}
-			catch (NpgsqlException)
-			{
-				return null;
-			}
-			catch (InvalidOperationException)
-			{
-				return null;
-			}
-			catch (SqlException)
-			{
-				return null;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return null;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<IEnumerable<Automobile>> GetAutomobilesAsync(IEnumerable<int> theAutomobileIds)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
-
-				var aPreparedCommand =
-					new NpgsqlCommand(
-						"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1", Connection);
-				aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theAutomobileIds));
-
-				var aReader = await aPreparedCommand.ExecuteReaderAsync();
-
-				if (!aReader.HasRows)
-					return Enumerable.Empty<Automobile>().ToList();
-
-				var aReturnList = new List<Automobile>();
-				while (await aReader.ReadAsync())
+				await aConnection.OpenAsync();
+				using (var aPreparedCommand = new NpgsqlCommand())
 				{
-					aReturnList.Add(ReadAutomobile(aReader));
+					aPreparedCommand.Connection = aConnection;
+					try
+					{
+						aPreparedCommand.CommandText =
+							"SELECT id, vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid from automobile where id = :value1";
+						aPreparedCommand.Parameters.AddWithValue("value1", string.Join(",", theAutomobileIds));
+
+						var aReader = await aPreparedCommand.ExecuteReaderAsync();
+
+						if (!aReader.HasRows)
+							return Enumerable.Empty<Automobile>().ToList();
+
+						var aReturnList = new List<Automobile>();
+						while (await aReader.ReadAsync())
+						{
+							aReturnList.Add(ReadAutomobile(aReader));
+						}
+						return aReturnList;
+					}
+					catch (NpgsqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (InvalidOperationException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (SqlException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return Enumerable.Empty<Automobile>().ToList();
+					}
 				}
-				return aReturnList;
-			}
-			catch (NpgsqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (InvalidOperationException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (SqlException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return Enumerable.Empty<Automobile>().ToList();
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
 			}
 		}
 
 		public async Task<int> AddAutomobileAsync(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					try
+					{
+						aCommand.CommandText =
+							"Insert into automobile (vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id";
+						aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
+						aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
+						aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
+						aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
+						aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
+						aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
+						aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
+						aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
+						aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
+						aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
 
-				var aCommand = new NpgsqlCommand(
-					"Insert into automobile (vin, vehiclenumber, name, class, style, color, manufacturer, model, code, locationid) VALUES (:value1, :value2, :value3, :value4, :value5, :value6, :value7, :value8, :value9, :value10) RETURNING id", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
-				aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
-				aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
-				aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
-				aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
-				aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
-				aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
-				aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
-				aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
-				aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
-
-				// returns the id from the SELECT, RETURNING sql statement above
-				return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
-			}
-			catch (NpgsqlException)
-			{
-				return 0;
-			}
-			catch (InvalidOperationException)
-			{
-				return 0;
-			}
-			catch (SqlException)
-			{
-				return 0;
-			}
-			catch (ConfigurationErrorsException)
-			{
-				return 0;
-			}
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+						// returns the id from the SELECT, RETURNING sql statement above
+						return Convert.ToInt32(await aCommand.ExecuteScalarAsync().ConfigureAwait(false));
+					}
+					catch (NpgsqlException)
+					{
+						return 0;
+					}
+					catch (InvalidOperationException)
+					{
+						return 0;
+					}
+					catch (SqlException)
+					{
+						return 0;
+					}
+					catch (ConfigurationErrorsException)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 
 		public async Task UpdateAutomobileAsync(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText =
+						"UPDATE automobile SET vin=:value1, vehiclenumber=:value2, name=:value3, class=:value4, style=:value5, color=:value6, manufacturer=:value7, model=:value8, code=:value9, locationid=:value10 where id=:value11;";
+					aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
+					aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
+					aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
+					aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
+					aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
+					aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
+					aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
+					aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
+					aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
+					aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
+					aCommand.Parameters.AddWithValue("value11", theAutomobile.Id);
 
-				var aCommand = new NpgsqlCommand(
-					"UPDATE automobile SET vin=:value1, vehiclenumber=:value2, name=:value3, class=:value4, style=:value5, color=:value6, manufacturer=:value7, model=:value8, code=:value9, locationid=:value10 where id=:value11;", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.VIN);
-				aCommand.Parameters.AddWithValue("value2", theAutomobile.VehicleNumber);
-				aCommand.Parameters.AddWithValue("value3", theAutomobile.Name);
-				aCommand.Parameters.AddWithValue("value4", theAutomobile.Class);
-				aCommand.Parameters.AddWithValue("value5", theAutomobile.Style);
-				aCommand.Parameters.AddWithValue("value6", theAutomobile.Color);
-				aCommand.Parameters.AddWithValue("value7", theAutomobile.Manufacturer);
-				aCommand.Parameters.AddWithValue("value8", theAutomobile.Model);
-				aCommand.Parameters.AddWithValue("value9", theAutomobile.Code);
-				aCommand.Parameters.AddWithValue("value10", theAutomobile.LocationId);
-				aCommand.Parameters.AddWithValue("value11", theAutomobile.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
 		public async Task DeleteAutomobileAsync(Automobile theAutomobile)
 		{
-			try
+			using (var aConnection = GetConnection())
 			{
-				await Connection.OpenAsync().ConfigureAwait(false);
+				await aConnection.OpenAsync();
+				using (var aCommand = new NpgsqlCommand())
+				{
+					aCommand.Connection = aConnection;
+					aCommand.CommandText = "DELETE from automobile where id=:value1";
+					aCommand.Parameters.AddWithValue("value1", theAutomobile.Id);
 
-				var aCommand = new NpgsqlCommand("DELETE from automobile where id=:value1", Connection);
-				aCommand.Parameters.AddWithValue("value1", theAutomobile.Id);
-
-				await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-			}
-			// no catch here, this is a reference project
-			// TODO: add catch and actions here
-			finally
-			{
-				if (Connection.State == ConnectionState.Open)
-					Connection.Close();
+					await aCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
 			}
 		}
 
