@@ -194,7 +194,6 @@ namespace TSD.Reference.Data.PostgreSQL.Repositories
 					aCommand.Parameters.AddWithValue("value1", theUser.Id);
 
 					aCommand.ExecuteNonQuery();
-
 				}
 			}
 		}
