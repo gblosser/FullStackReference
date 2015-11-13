@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TSD.Reference.API.Extensions;
-using TSD.Reference.API.Filters;
 using TSD.Reference.Core.Entities;
 using TSD.Reference.Core.Services.Interfaces;
 using WebApi.OutputCache.V2;

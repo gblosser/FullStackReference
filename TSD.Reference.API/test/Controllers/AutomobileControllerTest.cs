@@ -78,6 +78,9 @@ namespace TSD.Reference.API.test.Controllers
 				.ReturnsAsync(aAutomobileList.FirstOrDefault(aItem => aItem.Id == 1));
 			aAutomobileService.Setup(aItem => aItem.GetAutomobileAsync(2, 1))
 				.ReturnsAsync(null);
+			aAutomobileService.Setup(aItem => aItem.UpdateAutomobileAsync(1, It.IsAny<Automobile>()))
+				.Returns(Task.FromResult<object>(null));
+			aAutomobileService.Setup(aItem => aItem.AddAutomobileAsync(It.IsAny<Automobile>())).ReturnsAsync(1);
 
 			/*********************************************************************************************
 				build mock data for ControllerContext so that context-dependent properties can be tested 
@@ -166,6 +169,44 @@ namespace TSD.Reference.API.test.Controllers
 			var aCar = await _controller.Get(2);
 
 			Assert.Null(aCar);
+		}
+
+		[Fact]
+		public async Task PutCarTest()
+		{
+			_controller.User = _customer1;
+
+			var aCar = await _controller.Get(1);
+
+			aCar.LocationId = 6;
+
+			await _controller.Put(aCar);
+
+		}
+
+		[Fact]
+		public async Task PostCarTest()
+		{
+			_controller.User = _customer1;
+
+			var aCar = new Automobile
+			{
+				Id = 1,
+				VIN = "XYZ123ABC789chevy",
+				VehicleNumber = "RENT-1",
+				Name = "Chevy Impala",
+				Class = "Full Size",
+				Style = "Sedan",
+				Color = "Grey",
+				Manufacturer = "Chevrolet",
+				Model = "Impala",
+				Code = "FCAR",
+				LocationId = 1
+			};
+
+			var aId = await _controller.Post(aCar);
+
+			Assert.NotEqual(0, aId);
 		}
 	}
 }
